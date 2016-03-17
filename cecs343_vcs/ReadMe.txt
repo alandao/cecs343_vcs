@@ -39,13 +39,17 @@ should add to or customize.
 
 /////////////////////////////////////////////////////////////////////////////
 
-Program Name: git++
+CECS 343	
+
+Section 05 6967
+
+Professor Siska
 
 Team .JAR
 
 Authors:
 	Alan Dao alan.n.dao@gmail.com
-	Richard DeAvila crayonsrcool@hotmail.com
+Richard DeAvila crayonsrcool@hotmail.com
 	Joel Lee lee.joel395@gmail.com
 
 External Requirements:
@@ -59,4 +63,4 @@ Usage:
 		cd into directory for repo
 		Type "git++ init" to create a repo
 
-	
+
