@@ -47,10 +47,20 @@ Professor Siska
 
 Team .JAR
 
+Authors:
+	Alan Dao alan.n.dao@gmail.com
 Richard DeAvila crayonsrcool@hotmail.com
+	Joel Lee lee.joel395@gmail.com
 
-Alan Dao alan.n.dao@gmail.com
+External Requirements:
+	Windows 7 and higher.
 
+Build, Installation, and Setup:
+	Open cecs343_vcs.sln and build.
 
+Usage:
+	To create a new repo:
+		cd into directory for repo
+		Type "git++ init" to create a repo
 
 
