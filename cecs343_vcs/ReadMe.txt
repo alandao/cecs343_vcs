@@ -43,3 +43,5 @@ should add to or customize.
 Team .JAR
 
 Richard DeAvila crayonsrcool@hotmail.com
+
+Alan Dao alan.n.dao@gmail.com
