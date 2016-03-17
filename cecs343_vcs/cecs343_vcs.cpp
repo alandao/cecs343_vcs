@@ -4,19 +4,30 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <string>
+#include <iostream>
 using namespace std;
+
+/*Will receive the desired path of new directory as LPCWTSTR
+
+Returns true if succesffuly created; false otherwise
+*/
+bool CreateFolder(LPCWSTR &path) {
+	return (CreateDirectory(path, NULL));
+}
+
 
 int main()
 {
-	string h = "c:\\Users\\Richard\\";
-	LPCWSTR a = L"C:\\Users\\Richard";
-	CreateDirectory(a, NULL);;
-}
+	LPCWSTR directory = L"C:\\Users\\Richard\\Directory";
+	bool test = CreateFolder(directory);
+	if (test) {
+		cout << "Directory succesfully created";
+	}
 
-/*
-void CreateFolder(const char * path) {
-	if (!CreateDirectory(path, NULL)) {
-		return;
+	else if (ERROR_ALREADY_EXISTS == GetLastError()) {
+		cout << "Already exists";
+	}
+	else {
+		cout << "Failed for some other reason";
 	}
 }
-*/
