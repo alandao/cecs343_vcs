@@ -39,6 +39,11 @@ should add to or customize.
 
 /////////////////////////////////////////////////////////////////////////////
 
+CECS 343	
+
+Section 05 6967
+
+Professor Siska
 
 Team .JAR
 
@@ -46,6 +51,6 @@ Richard DeAvila crayonsrcool@hotmail.com
 
 Alan Dao alan.n.dao@gmail.com
 
-//comment
 
-testy
+
+
