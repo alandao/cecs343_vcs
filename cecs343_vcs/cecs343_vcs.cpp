@@ -19,8 +19,7 @@ bool CreateFolder(LPCWSTR &path) {
 int main()
 {
 	LPCWSTR directory = L"C:\\Users\\Richard\\Directory";
-	bool test = CreateFolder(directory);
-	if (test) {
+	if (CreateFolder(directory)) {
 		cout << "Directory succesfully created";
 	}
 
