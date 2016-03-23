@@ -11,17 +11,23 @@
 using namespace std;
 
 
-__int64 FileSize64(const char * szFileName)
+__int64 FileSize64(LPCWSTR szFileName)
 {
 	struct __stat64 fileStat;
-	int err = _stat64(szFileName, &fileStat);
-	if (0 != err) return 0;
+	int err = _wstat64(szFileName, &fileStat);
+	if (0 != err) 
+		return 0;
 	return fileStat.st_size;
 }
 
 //gets the files bytes, and modulos it by 256 to get a number from 0 to 255.
-int CheckSum(string filepath) {
-	return 0;
+//returns -1 if filesize fails.
+int CheckSum(LPCWSTR filepath) {
+	int filesize = FileSize64(filepath);
+	if (filesize == 0)
+		return -1;
+	else
+		return filesize % 256;
 }
 void TrackFile(LPCWSTR filepath) {
 	//copies file from filepath into manifest
@@ -30,8 +36,9 @@ void TrackFile(LPCWSTR filepath) {
 	CreateDirectory(filepath, NULL);
 	bool loop = true;
 	int filecount = 1;
+	/*
 	while (loop) {
-		wstring stemp2 = s2ws(newfolder + "\\" + filepath + " - " + to_string(filecount));
+		wstring stemp2 = newfolder + "\\" + filepath + " - " + to_string(filecount));
 		//this name is supposed to be a checksum.
 		LPCWSTR newfolderLPC = stemp2.c_str();
 		if (CopyFile(filepath, newfolder, true)) {
@@ -43,11 +50,13 @@ void TrackFile(LPCWSTR filepath) {
 			cout << "File exists";
 			filecount++;
 		}
-	}
+	} */
 
 }
 
 int main()
 {
+	cout << FileSize64(L"h.txt") << endl;
+	cout << CheckSum(L"h.txt") << endl;
 	return 0;
 }
