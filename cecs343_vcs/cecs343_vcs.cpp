@@ -39,6 +39,8 @@ void findFile(int argc, TCHAR *argv[]) {
 
 */
 
+int findFiles(const char*);
+
 string Chop(string &str) {
 	string res = str;
 	int len = str.length();
@@ -130,19 +132,22 @@ void TrackFile(LPCWSTR filepath) {
 
 
 
-
+/*Will dump out all the info. Folders are printed out in brackets[]*/
 void DumpEntry(_finddata_t &data, const char * address ) {
 	string createtime(ctime(&data.time_create));
 	cout << Chop(createtime) << "\t";
 	cout << data.size << "\t";
+
+	//this if statement will execute when a subdirectory has been found
 	if ((data.attrib & _A_SUBDIR) == _A_SUBDIR) {
 		cout << "[" << data.name << "]" << endl;
 		string temp = address;
 		temp.pop_back();
 		temp.pop_back();
 		temp = temp + data.name + "/**";
+		string folder = data.name;
 		cout << temp << endl;
-		if (data.name == "x64") {
+		if (folder == "x64") {
 			findFiles(temp.c_str());
 		}
 	}
@@ -151,6 +156,8 @@ void DumpEntry(_finddata_t &data, const char * address ) {
 	}
 }
 
+
+/*will find all files in the given address*/
 int findFiles(const char* directoryAddress) {
 	int yolo;
 	_finddata_t data;
@@ -167,6 +174,9 @@ int findFiles(const char* directoryAddress) {
 	return 0;
 }
 
+
+/*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave 
+them empty to look for all files, including folders.*/
 int main()
 {
 	int yolo;
