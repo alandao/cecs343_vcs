@@ -208,7 +208,7 @@ int findFiles(const char* directoryAddress) {
 	return 0;
 }
 
-int main()
+int main(int argc, char *argv[], char *envp[])
 {
 	// g++ create_repo sourcefolder targetfolder
 	//source folder has the original files, target will is where it will copied to
@@ -216,7 +216,9 @@ int main()
 	if (std::string(argv[1]) == "create_repo") {
 		LPCWSTR sourcefolder = (wchar_t*)argv[2];
 		LPCWSTR targetfolder = (wchar_t*)argv[3];
-		cout << "Copying from: " << sourcefolder << " into: " << targetfolder << endl;
+		//this printing thing is broken. Idea is to convert argv into a string then string into LPC.
+		//allows for use of string as needed.
+		//cout << "Copying from: " << sourcefolder << " into: " << targetfolder << endl;
 	}
 	cout << FileSize64(L"h.txt") << endl;
 	cout << CheckSum(L"h.txt") << endl;
