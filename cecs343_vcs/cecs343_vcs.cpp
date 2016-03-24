@@ -42,7 +42,6 @@ void TrackFile(string filepath) {
 			filecount++;
 		}
 	}
-
 }
 
 std::wstring s2ws(const std::string& s) {
