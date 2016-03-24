@@ -54,8 +54,16 @@ void TrackFile(LPCWSTR filepath) {
 
 }
 
-int main()
+int main(int argc, char *argv[], char *envp[])
 {
+	// g++ create_repo sourcefolder targetfolder
+	//source folder has the original files, target will is where it will copied to
+	cout << argv[1] << endl;
+	if (std::string(argv[1]) == "create_repo") {
+		LPCWSTR sourcefolder = (wchar_t*)argv[2];
+		LPCWSTR targetfolder = (wchar_t*)argv[3];
+		cout << "Copying from: " << sourcefolder << " into: " << targetfolder << endl;
+	}
 	cout << FileSize64(L"h.txt") << endl;
 	cout << CheckSum(L"h.txt") << endl;
 	return 0;
