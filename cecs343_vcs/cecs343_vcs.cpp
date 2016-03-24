@@ -177,10 +177,57 @@ int findFiles(const char* directoryAddress) {
 
 /*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave 
 them empty to look for all files, including folders.*/
+
+
+
+
+
+void DumpEntry(_finddata_t &data, const char * address ) {
+	string createtime(ctime(&data.time_create));
+	cout << Chop(createtime) << "\t";
+	cout << data.size << "\t";
+	if ((data.attrib & _A_SUBDIR) == _A_SUBDIR) {
+		cout << "[" << data.name << "]" << endl;
+		string temp = address;
+		temp.pop_back();
+		temp.pop_back();
+		temp = temp + data.name + "/**";
+		cout << temp << endl;
+		if (data.name == "x64") {
+			findFiles(temp.c_str());
+		}
+	}
+	else {
+		cout << data.name << endl;
+	}
+}
+
+int findFiles(const char* directoryAddress) {
+	int yolo;
+	_finddata_t data;
+	int ff = _findfirst(directoryAddress, &data);
+	if (ff != -1) {
+		int res = 0;
+		while (res != -1) {
+			DumpEntry(data, directoryAddress);
+			res = _findnext(ff, &data);
+		}
+		_findclose(ff);
+	}
+	cin >> yolo;
+	return 0;
+}
+
 int main()
 {
-	int yolo;
-	//LPCWSTR directory = L"c:\\users\\richard\\source\\repos\\";
+	// g++ create_repo sourcefolder targetfolder
+	//source folder has the original files, target will is where it will copied to
+	cout << argv[1] << endl;
+	if (std::string(argv[1]) == "create_repo") {
+		LPCWSTR sourcefolder = (wchar_t*)argv[2];
+		LPCWSTR targetfolder = (wchar_t*)argv[3];
+		cout << "Copying from: " << sourcefolder << " into: " << targetfolder << endl;
+	}
 	cout << FileSize64(L"h.txt") << endl;
 	cout << CheckSum(L"h.txt") << endl;
 	const char* directoryAddress = "c:/users/richard/source/repos/cecs343_vcs/cecs343_vcs/**";
