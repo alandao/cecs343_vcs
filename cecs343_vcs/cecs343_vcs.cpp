@@ -167,6 +167,47 @@ int findFiles(const char* directoryAddress) {
 	return 0;
 }
 
+
+
+
+
+
+void DumpEntry(_finddata_t &data, const char * address ) {
+	string createtime(ctime(&data.time_create));
+	cout << Chop(createtime) << "\t";
+	cout << data.size << "\t";
+	if ((data.attrib & _A_SUBDIR) == _A_SUBDIR) {
+		cout << "[" << data.name << "]" << endl;
+		string temp = address;
+		temp.pop_back();
+		temp.pop_back();
+		temp = temp + data.name + "/**";
+		cout << temp << endl;
+		if (data.name == "x64") {
+			findFiles(temp.c_str());
+		}
+	}
+	else {
+		cout << data.name << endl;
+	}
+}
+
+int findFiles(const char* directoryAddress) {
+	int yolo;
+	_finddata_t data;
+	int ff = _findfirst(directoryAddress, &data);
+	if (ff != -1) {
+		int res = 0;
+		while (res != -1) {
+			DumpEntry(data, directoryAddress);
+			res = _findnext(ff, &data);
+		}
+		_findclose(ff);
+	}
+	cin >> yolo;
+	return 0;
+}
+
 int main()
 {
 	// g++ create_repo sourcefolder targetfolder
