@@ -5,7 +5,8 @@
 
 #include "directory.h"
 
-// alan: we shouldn't need <iostream> when this module is done.
+// alan: we shouldn't need <iostream> when this module is done since we want findFiles to return 
+// a std::vector<std::string>
 #include <iostream>
 
 
@@ -37,7 +38,6 @@ void DumpEntry(_finddata_t &data, const char * address) {
 
 
 int findFiles(const char* directoryAddress) {
-	int yolo;
 	_finddata_t data;
 	int ff = _findfirst(directoryAddress, &data);
 	if (ff != -1) {
@@ -48,7 +48,6 @@ int findFiles(const char* directoryAddress) {
 		}
 		_findclose(ff);
 	}
-	std::cin >> yolo;
 	return 0;
 }
 
