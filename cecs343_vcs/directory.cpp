@@ -1,4 +1,3 @@
-
 #include <string>
 #include <Windows.h>
 #include <strsafe.h>
@@ -6,11 +5,13 @@
 
 #include "directory.h"
 
-//we shouldn't need this when this module is done.
+// alan: we shouldn't need <iostream> when this module is done.
 #include <iostream>
 
 
 
+/*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave
+them empty to look for all files, including folders.*/
 void DumpEntry(_finddata_t &data, const char * address) {
 	std::string createtime(ctime(&data.time_create));
 	std::cout << Chop(createtime) << "\t";
@@ -65,7 +66,7 @@ std::string Chop(std::string &str) {
 }
 
 void DisplayErrorBox(LPTSTR lpszFunction) {
-	// Retrieve the system error message for the last-error code
+	
 
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;

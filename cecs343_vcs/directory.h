@@ -1,3 +1,4 @@
+//This module contains functions for navigating the Windows Filesystem.
 #pragma once
 
 #include <Windows.h>
@@ -12,4 +13,5 @@ int findFiles(const char*);
 
 std::string Chop(std::string &str);
 
+// Retrieve the system error message for the last-error code
 void DisplayErrorBox(LPTSTR lpszFunction);
