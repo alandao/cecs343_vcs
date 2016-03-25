@@ -29,7 +29,13 @@ int CheckSum(LPCWSTR filepath) {
 	else
 		return filesize % 256;
 }
-void TrackFile(LPCWSTR filepath) {
+
+/*
+ex:
+filepath = "a.txt" - > Windows Explorer(TARGETFOLDER\repo343\a.txt\<checksum>.txt)
+		 = "folder/anotherfolder/
+*/
+void TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 	//copies file from filepath into manifest
 	//calls CreateDirectory always
 	LPCWSTR newfolder = (wstring(L"manifest\\") + wstring(filepath)).c_str();
