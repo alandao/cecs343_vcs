@@ -27,12 +27,18 @@
     <ClInclude Include="cecs343_vcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="directory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cecs343_vcs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
