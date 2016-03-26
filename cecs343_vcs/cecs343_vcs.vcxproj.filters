@@ -16,6 +16,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="src_test\a.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="src_test\b.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directory.h">
@@ -26,9 +32,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cecs343_vcs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -143,6 +143,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="src_test\a.txt" />
+    <Text Include="src_test\b.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directory.h" />
@@ -151,7 +153,6 @@
   <ItemGroup>
     <ClCompile Include="cecs343_vcs.cpp" />
     <ClCompile Include="directory.cpp" />
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="vcs.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
