@@ -26,10 +26,10 @@ int CheckSum(LPCWSTR filepath) {
 void TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 	//copies file from filepath into manifest
 	//calls CreateDirectory always
-	LPCWSTR newfolder = (std::wstring(L"manifest\\") + std::wstring(filepath)).c_str();
-	CreateDirectory(filepath, NULL);
-	bool loop = true;
-	int filecount = 1;
+	LPCWSTR newfolder = (std::wstring(tgtFolder) + std::wstring(L"repo343/") + 
+							std::wstring(filepath)).c_str();
+
+	//CreateDirectory(filepath, NULL);
 	/*
 	while (loop) {
 	wstring stemp2 = newfolder + "\\" + filepath + " - " + to_string(filecount));

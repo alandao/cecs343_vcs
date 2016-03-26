@@ -13,9 +13,9 @@ __int64 FileSize64(LPCWSTR szFileName);
 //returns -1 if filesize fails.
 int CheckSum(LPCWSTR filepath);
 
-/*
-ex:
-filepath = "a.txt" - > Windows Explorer(TARGETFOLDER\repo343\a.txt\<checksum>.txt)
-= "folder/anotherfolder/
-*/
+
+//ex:
+//filepath = "a.txt" - > Windows Explorer(TARGETFOLDER\repo343\a.txt\<checksum>.txt)
+//= "folder/anotherfolder/a.txt" ->
+//	Windows Explorer(TARGETFOLDER\repo343\folder\anotherfolder\a.txt\<checksum>.txt
 void TrackFile(LPCWSTR filepath, LPCWSTR targetfolder);
