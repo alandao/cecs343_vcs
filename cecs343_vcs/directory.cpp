@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <strsafe.h>
 #include <time.h>
+#include <atlbase.h>
 
 #include "directory.h"
 
@@ -13,6 +14,7 @@
 
 /*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave
 them empty to look for all files, including folders.*/
+/*
 void DumpEntry(_finddata_t &data, const char * address) {
 	std::string createtime(ctime(&data.time_create));
 	std::cout << Chop(createtime) << "\t";
@@ -35,20 +37,49 @@ void DumpEntry(_finddata_t &data, const char * address) {
 		std::cout << data.name << std::endl;
 	}
 }
+*/
 
+int findFiles(LPCWSTR directoryAddress) {
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA ffd;
+	LARGE_INTEGER filesize;
+	DWORD dwError = 0;
 
-int findFiles(const char* directoryAddress) {
-	_finddata_t data;
-	int ff = _findfirst(directoryAddress, &data);
-	if (ff != -1) {
-		int res = 0;
-		while (res != -1) {
-			DumpEntry(data, directoryAddress);
-			res = _findnext(ff, &data);
-		}
-		_findclose(ff);
+	std::wstring dirAddress(directoryAddress);
+
+	// Find the first file in the directory.
+
+	hFind = FindFirstFile(dirAddress.c_str(), &ffd);
+
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		DisplayErrorBox(TEXT("FindFirstFile"));
+		return dwError;
 	}
-	return 0;
+
+	// List all the files in the directory with some info about them.
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
+		}
+		else
+		{
+			filesize.LowPart = ffd.nFileSizeLow;
+			filesize.HighPart = ffd.nFileSizeHigh;
+			_tprintf(TEXT("  %s   %ld bytes\n"), ffd.cFileName, filesize.QuadPart);
+		}
+	} while (FindNextFile(hFind, &ffd) != 0);
+
+	dwError = GetLastError();
+	if (dwError != ERROR_NO_MORE_FILES)
+	{
+		DisplayErrorBox(TEXT("FindFirstFile"));
+	}
+
+	FindClose(hFind);
+	return dwError;
 }
 
 std::string Chop(std::string &str) {
@@ -64,8 +95,11 @@ std::string Chop(std::string &str) {
 	return res;
 }
 
-void DisplayErrorBox(LPTSTR lpszFunction) {
-	
+
+
+void DisplayErrorBox(LPTSTR lpszFunction)
+{
+	// Retrieve the system error message for the last-error code
 
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;
@@ -94,3 +128,5 @@ void DisplayErrorBox(LPTSTR lpszFunction) {
 	LocalFree(lpMsgBuf);
 	LocalFree(lpDisplayBuf);
 }
+
+

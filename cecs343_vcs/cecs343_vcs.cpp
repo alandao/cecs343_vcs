@@ -20,8 +20,8 @@ int main(int argc, char *argv[], char *envp[])
 	std::cout << arg1 << std::endl;
 
 	//alan: this works.
-	const char* src = "src_test/**";
-	int result = findFiles("src_test/**");
+	const LPCWSTR src = L"src_test/**";
+	int result = findFiles(src);
 
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
@@ -31,7 +31,7 @@ int main(int argc, char *argv[], char *envp[])
 		LPCWSTR sourcefolder = srctemp.c_str();
 		//this printing thing is broken. Idea is to convert argv into a string then string into LPC.
 		//allows for use of string as needed.
-		std::cout << "Copying from: " << sourcefolder << " into: " << targetfolder << std::endl;
+		std::wcout << "Copying from: " << sourcefolder << " into: " << targetfolder << std::endl;
 	}
 
 	return 0;

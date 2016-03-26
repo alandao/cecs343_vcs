@@ -9,7 +9,7 @@
 void DumpEntry(_finddata_t &data, const char * address);
 
 /*will find all files in the given address*/
-int findFiles(const char*);
+int findFiles(LPCWSTR);
 
 std::string Chop(std::string &str);
 
