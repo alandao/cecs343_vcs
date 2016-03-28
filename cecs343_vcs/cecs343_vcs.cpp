@@ -33,13 +33,12 @@ int main(int argc, char *argv[], char *envp[])
 
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
-		std::wstring trgttemp = std::wstring(arg3.begin(), arg3.end());
-		LPCWSTR targetfolder = trgttemp.c_str();
-		std::wstring srctemp = std::wstring(arg2.begin(), arg2.end());
-		LPCWSTR sourcefolder = srctemp.c_str();
+		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
+		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
 		//this printing thing is broken. Idea is to convert argv into a string then string into LPC.
 		//allows for use of string as needed.
 		std::wcout << "Copying from: " << sourcefolder << " into: " << targetfolder << std::endl;
+		std::wstring action = TrackFile(L"src_test/test/c.txt", targetfolder.c_str());
 	}
 
 	return 0;
