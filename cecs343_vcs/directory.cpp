@@ -4,6 +4,7 @@
 #include <strsafe.h>
 #include <time.h>
 #include <atlbase.h>
+#include <vector>
 
 #include "directory.h"
 
@@ -43,8 +44,6 @@ void DumpEntry(_finddata_t &data, const char * address) {
 */
 
 
-//Richard:: Send this method the address of a directory, and a vector where it will store the address of all the files
-//NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
@@ -68,7 +67,6 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 	{
 		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
 			std::wstring tempString(dirAddress);
 			std::wstring back = ffd.cFileName;
 			tempString.pop_back();
@@ -83,9 +81,6 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 		}
 		else
 		{
-			filesize.LowPart = ffd.nFileSizeLow;
-			filesize.HighPart = ffd.nFileSizeHigh;
-			_tprintf(TEXT("  %s   %ld bytes\n"), ffd.cFileName, filesize.QuadPart);
 			std::wstring location = directoryAddress;
 			location.pop_back();
 			location.pop_back();
