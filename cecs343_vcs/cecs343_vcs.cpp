@@ -5,6 +5,8 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+
 #include <fstream>
 #include <time.h>
 //our libraries
@@ -25,19 +27,9 @@ const std::string currentDateTime() {
 int main(int argc, char *argv[], char *envp[])
 {
 	//initialize the three arguments.
-	std::string arg1(argv[1]); 
-	std::string arg2(argv[2]);
-	std::string arg3(argv[3]);
-
-	std::cout << arg1 << std::endl;
-
-	//alan: this works.
-	const LPCWSTR src = L"src_test/**";
-	int list = findFiles(src);
-
-	//folders must exist before copying files over to that folder.
-	//const LPCWSTR test = L"target_folder/test/one";
-	//bool result = CopyFile(L"src_test/a.txt", L"target_test/a.txt/158.txt", true);
+	std::string arg1 = argv[1]; 
+	std::string arg2 = argv[2];
+	std::string arg3 = argv[3];
 
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
@@ -58,6 +50,17 @@ int main(int argc, char *argv[], char *envp[])
 		outputFile << "I was born." << std::endl;
 		outputFile << nowDate << std::endl;
 		outputFile.close();
+
+		//Richard: This vector contains the addresses of all the files in a given repo. 
+		std::vector<std::wstring> filepaths;
+		std::wstring src = sourcefolder + L"**";
+		int result = findFiles(src.c_str(), filepaths);
+		std::wcout << L"Source Folder: " << sourcefolder << L"\nTarget Folder: " << targetfolder << std::endl;
+
+		for (std::wstring x : filepaths) {
+			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
+		}
+		
 	}
 
 	return 0;
