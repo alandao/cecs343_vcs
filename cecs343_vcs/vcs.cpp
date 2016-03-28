@@ -56,7 +56,7 @@ std::wstring TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 		CreateDirectory(x.c_str(), NULL);
 	}
 	std::wstring artifactID = std::to_wstring(CheckSum(filepath));
-	std::wstring newFilePath = (std::wstring(tgtFolder) + std::wstring(L"repo343/") + filepath + L"/" + artifactID + std::wstring(L".txt"));
+	std::wstring newFilePath = (std::wstring(tgtFolder) + std::wstring(L"repo343/") + filepath + L"/" + artifactID);
 	//copy file from src to target folder and rename as artifact id.
 	CopyFile(filepath, newFilePath.c_str(), true);
 

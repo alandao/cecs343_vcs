@@ -7,8 +7,6 @@
 //returns the filesize of a given file.
 __int64 FileSize64(LPCWSTR szFileName);
 
-//test commit f
-
 //gets the files bytes, and modulos it by 256 to get a number from 0 to 255.
 //returns -1 if filesize fails.
 int CheckSum(LPCWSTR filepath);

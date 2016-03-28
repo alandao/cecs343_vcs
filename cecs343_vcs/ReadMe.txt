@@ -24,43 +24,33 @@ cecs343_vcs.vcxproj.filters
 cecs343_vcs.cpp
     This is the main application source file.
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
-
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named cecs343_vcs.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////
-
-CECS 343	
-
-Section 05 6967
-
-Professor Siska
+CECS 343 Section 05 6967
 
 Team .JAR
 
+Program Name: cecs343_vcs
+
+Project Part 1
+
+Build, Installation, and Setup:
+	Open cecs343_vcs.sln and build.
+	Use the generated cecs343_vcs.exe from the command prompt or Powershell.
+
+Usage:
+	To create a new repo:
+		Type "cecs343_vcs create_repo SRCFOLDER TARGETFOLDER" to create a repo from SRCFOLDER inside TARGETFOLDER
+
 Authors:
 	Alan Dao alan.n.dao@gmail.com
-Richard DeAvila crayonsrcool@hotmail.com
+	Richard DeAvila crayonsrcool@hotmail.com
 	Joel Lee lee.joel395@gmail.com
 
 External Requirements:
 	Windows 7 and higher.
+	Visual Studio 2015
 
-Build, Installation, and Setup:
-	Open cecs343_vcs.sln and build.
+Bugs:
+	None noticed so far.
 
-Usage:
-	To create a new repo:
-		cd into directory for repo
-		Type "git++ init" to create a repo
 
 

@@ -10,44 +10,11 @@
 
 // alan: we shouldn't need <iostream> when this module is done since we want findFiles to return 
 // a std::vector<std::string>
-#include <iostream>
-
-
-
-/*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave
-them empty to look for all files, including folders.*/
-
-/*
-void DumpEntry(_finddata_t &data, const char * address) {
-
-	std::string createtime(ctime(&data.time_create));
-	std::cout << Chop(createtime) << "\t";
-	std::cout << data.size << "\t";
-
-	//this if statement will execute when a subdirectory has been found
-	if ((data.attrib & _A_SUBDIR) == _A_SUBDIR) {
-		std::cout << "[" << data.name << "]" << std::endl;
-		std::string temp = address;
-		temp.pop_back();
-		temp.pop_back();
-		temp = temp + data.name + "/**";
-		std::string folder = data.name;
-		std::cout << temp << std::endl;
-		if (folder == "x64") {
-		//	findFiles(temp.c_str());
-		}
-	}
-	else {
-		std::cout << data.name << std::endl;
-	}
-}
-*/
 
 
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
-	LARGE_INTEGER filesize;
 	DWORD dwError = 0;
 
 	std::wstring dirAddress(directoryAddress);
@@ -72,7 +39,7 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 			tempString.pop_back();
 			tempString.pop_back();
 			tempString += ffd.cFileName;
-			std::wcout << tempString;
+			//std::wcout << tempString;
 			if (back != L".." && back != L".") {
 				tempString += L"/**";
 				findFiles(tempString, addressVector);
@@ -99,24 +66,11 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 	return dwError;
 }
 
-std::string Chop(std::string &str) {
-	std::string res = str;
-	int len = str.length();
-	if (str[len - 1] == '\r') {
-		res.replace(len - 1, 1, "");
-	}
-	len = str.length();
-	if (str[len - 1] == '\n') {
-		res.replace(len - 1, 1, "");
-	}
-	return res;
-}
-
 const std::string currentDateTime() {
 	time_t     now = time(0);
 	struct tm  tstruct;
 	char       buf[80];
-	tstruct = *localtime(&now);
+	localtime_s(&tstruct, &now);
 	strftime(buf, sizeof(buf), "%Y-%m-%d @ %I;%M;%S %p", &tstruct);
 	return buf;
 }

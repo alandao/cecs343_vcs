@@ -26,14 +26,14 @@ int main(int argc, char *argv[], char *envp[])
 	if (arg1.compare("create_repo") == 0) {
 		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
 		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
-		//this printing thing is broken. Idea is to convert argv into a string then string into LPC.
-		//allows for use of string as needed.
-		std::wcout << "Copying from: " << sourcefolder << " into: " << targetfolder << std::endl;
-		std::wstring action = TrackFile(L"src_test/test/c.txt", targetfolder.c_str());
+
 		//make a new file called manifest where appropriate, cat actions done to the manifest
 		//Filename is timestamp, contents are actions done. (added/removed/moved/edited files)
 		std::wstring manifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");
+		CreateDirectory(targetfolder.c_str(), NULL);
+		CreateDirectory((targetfolder + L"repo343/").c_str(), NULL);
 		CreateDirectory(manifestLoc.c_str(), NULL);
+
 		//filename is the time of changes made.
 		std::string nowDate(currentDateTime());
 		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
