@@ -20,10 +20,16 @@ int main(int argc, char *argv[], char *envp[])
 	std::cout << arg1 << std::endl;
 
 	//alan: this works.
-	std::vector<std::string> addresses;
-	const LPCWSTR src = L"x64/**";
-	int result = findFiles(src);
+	std::vector<std::wstring> addresses; //Richard: This vector contains the addresses of all the files in a given repo. 
+	//const LPCWSTR src = L"src_test/**"; Richard: LPCWSTR is no longer needed.
+	std::wstring src = L"src_test/**";
+	int result = findFiles(src, addresses);
+	for (std::vector<std::wstring>::iterator it = addresses.begin(); it != addresses.end(); ++it) {
+		std::wcout << *it << std::endl;
+	}
+
 	std::cin >> arg1[1];
+
 
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
