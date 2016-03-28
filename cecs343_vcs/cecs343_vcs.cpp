@@ -5,10 +5,22 @@
 
 #include <string>
 #include <iostream>
-
+#include <fstream>
+#include <time.h>
 //our libraries
 #include "directory.h"
 #include "vcs.h"
+
+const std::string currentDateTime() {
+	//Time returned in YYYY-MM-DD @ HH;MM;SS format
+	//Windows is dumb and won't let me use colons (:). Thanks Bill Gates.
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       buf[80];
+	tstruct = *localtime(&now);
+	strftime(buf, sizeof(buf), "%Y-%m-%d @ %I;%M;%S %p", &tstruct);
+	return buf;
+}
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -35,6 +47,17 @@ int main(int argc, char *argv[], char *envp[])
 		//allows for use of string as needed.
 		std::wcout << "Copying from: " << sourcefolder << " into: " << targetfolder << std::endl;
 		std::wstring action = TrackFile(L"src_test/test/c.txt", targetfolder.c_str());
+		//make a new file called manifest where appropriate, cat actions done to the manifest
+		//Filename is timestamp, contents are actions done. (added/removed/moved/edited files)
+		std::wstring manifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");
+		CreateDirectory(manifestLoc.c_str(), NULL);
+		//filename is the time of changes made.
+		std::string nowDate(currentDateTime());
+		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
+		std::ofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
+		outputFile << "I was born." << std::endl;
+		outputFile << nowDate << std::endl;
+		outputFile.close();
 	}
 
 	return 0;
