@@ -20,8 +20,10 @@ int main(int argc, char *argv[], char *envp[])
 	std::cout << arg1 << std::endl;
 
 	//alan: this works.
-	const LPCWSTR src = L"src_test/**";
+	std::vector<std::string> addresses;
+	const LPCWSTR src = L"x64/**";
 	int result = findFiles(src);
+	std::cin >> arg1[1];
 
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
