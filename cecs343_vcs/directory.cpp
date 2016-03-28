@@ -1,5 +1,6 @@
 #include <string>
 #include <Windows.h>
+#include <tchar.h>
 #include <strsafe.h>
 #include <time.h>
 #include <atlbase.h>
@@ -14,8 +15,10 @@
 
 /*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave
 them empty to look for all files, including folders.*/
+
 /*
 void DumpEntry(_finddata_t &data, const char * address) {
+
 	std::string createtime(ctime(&data.time_create));
 	std::cout << Chop(createtime) << "\t";
 	std::cout << data.size << "\t";
@@ -30,7 +33,7 @@ void DumpEntry(_finddata_t &data, const char * address) {
 		std::string folder = data.name;
 		std::cout << temp << std::endl;
 		if (folder == "x64") {
-			findFiles(temp.c_str());
+		//	findFiles(temp.c_str());
 		}
 	}
 	else {
@@ -39,7 +42,7 @@ void DumpEntry(_finddata_t &data, const char * address) {
 }
 */
 
-int findFiles(LPCWSTR directoryAddress) {
+int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
 	LARGE_INTEGER filesize;
@@ -63,12 +66,28 @@ int findFiles(LPCWSTR directoryAddress) {
 		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
 			_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
+			std::wstring tempString(dirAddress);
+			std::wstring back = ffd.cFileName;
+			tempString.pop_back();
+			tempString.pop_back();
+			tempString += ffd.cFileName;
+			std::wcout << tempString;
+			if (back != L".." && back != L".") {
+				tempString += L"/**";
+				findFiles(tempString, addressVector);
+			}
+
 		}
 		else
 		{
 			filesize.LowPart = ffd.nFileSizeLow;
 			filesize.HighPart = ffd.nFileSizeHigh;
 			_tprintf(TEXT("  %s   %ld bytes\n"), ffd.cFileName, filesize.QuadPart);
+			std::wstring location = directoryAddress;
+			location.pop_back();
+			location.pop_back();
+			location += ffd.cFileName;
+			addressVector.push_back(location);
 		}
 	} while (FindNextFile(hFind, &ffd) != 0);
 
