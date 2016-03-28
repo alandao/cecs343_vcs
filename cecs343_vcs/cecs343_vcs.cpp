@@ -34,7 +34,7 @@ int main(int argc, char *argv[], char *envp[])
 		//this printing thing is broken. Idea is to convert argv into a string then string into LPC.
 		//allows for use of string as needed.
 		std::wcout << "Copying from: " << sourcefolder << " into: " << targetfolder << std::endl;
-		std::wstring action = (L"src_test/test/c.txt", targetfolder.c_str());
+		std::wstring action = TrackFile(L"src_test/test/c.txt", targetfolder.c_str());
 	}
 
 	return 0;
