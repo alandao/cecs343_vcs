@@ -14,8 +14,5 @@ __int64 FileSize64(LPCWSTR szFileName);
 int CheckSum(LPCWSTR filepath);
 
 
-//ex:
-//filepath = "a.txt" - > Windows Explorer(TARGETFOLDER\repo343\a.txt\<checksum>.txt)
-//= "folder/anotherfolder/a.txt" ->
-//	Windows Explorer(TARGETFOLDER\repo343\folder\anotherfolder\a.txt\<checksum>.txt
-void TrackFile(LPCWSTR filepath, LPCWSTR targetfolder);
+//Tracks a file into the repo. Returns an string log that will be recorded in the manifest.
+std::wstring TrackFile(LPCWSTR filepath, LPCWSTR targetfolder);
