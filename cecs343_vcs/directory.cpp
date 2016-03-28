@@ -42,6 +42,9 @@ void DumpEntry(_finddata_t &data, const char * address) {
 }
 */
 
+
+//Richard:: Send this method the address of a directory, and a vector where it will store the address of all the files
+//NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
