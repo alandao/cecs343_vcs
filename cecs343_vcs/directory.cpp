@@ -112,7 +112,14 @@ std::string Chop(std::string &str) {
 	return res;
 }
 
-
+const std::string currentDateTime() {
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       buf[80];
+	tstruct = *localtime(&now);
+	strftime(buf, sizeof(buf), "%Y-%m-%d @ %I;%M;%S %p", &tstruct);
+	return buf;
+}
 
 void DisplayErrorBox(LPTSTR lpszFunction)
 {

@@ -13,16 +13,7 @@
 #include "directory.h"
 #include "vcs.h"
 
-const std::string currentDateTime() {
-	//Time returned in YYYY-MM-DD @ HH;MM;SS format
-	//Windows is dumb and won't let me use colons (:). Thanks Bill Gates.
-	time_t     now = time(0);
-	struct tm  tstruct;
-	char       buf[80];
-	tstruct = *localtime(&now);
-	strftime(buf, sizeof(buf), "%Y-%m-%d @ %I;%M;%S %p", &tstruct);
-	return buf;
-}
+
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -46,10 +37,8 @@ int main(int argc, char *argv[], char *envp[])
 		//filename is the time of changes made.
 		std::string nowDate(currentDateTime());
 		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
-		std::ofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
-		outputFile << "I was born." << std::endl;
-		outputFile << nowDate << std::endl;
-		outputFile.close();
+		std::wofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
+		outputFile << L"I was born." << std::endl;
 
 		//Richard: This vector contains the addresses of all the files in a given repo. 
 		std::vector<std::wstring> filepaths;
@@ -59,7 +48,9 @@ int main(int argc, char *argv[], char *envp[])
 
 		for (std::wstring x : filepaths) {
 			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
+			outputFile << action << std::endl;
 		}
+		outputFile.close();
 		
 	}
 

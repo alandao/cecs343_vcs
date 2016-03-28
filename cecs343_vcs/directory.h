@@ -16,3 +16,7 @@ std::string Chop(std::string &str);
 
 // Retrieve the system error message for the last-error code
 void DisplayErrorBox(LPTSTR lpszFunction);
+
+//Local time returned in YYYY-MM-DD @ HH;MM;SS format
+//Windows is dumb and won't let me use colons (:). Thanks Bill Gates.
+const std::string currentDateTime();
