@@ -1,5 +1,6 @@
 #include <string>
 #include <Windows.h>
+#include <tchar.h>
 #include <strsafe.h>
 #include <time.h>
 #include <atlbase.h>
@@ -14,7 +15,7 @@
 
 /*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave
 them empty to look for all files, including folders.*/
-/*
+
 void DumpEntry(_finddata_t &data, const char * address) {
 	std::string createtime(ctime(&data.time_create));
 	std::cout << Chop(createtime) << "\t";
@@ -30,14 +31,14 @@ void DumpEntry(_finddata_t &data, const char * address) {
 		std::string folder = data.name;
 		std::cout << temp << std::endl;
 		if (folder == "x64") {
-			findFiles(temp.c_str());
+			//findFiles(temp.c_str());
 		}
 	}
 	else {
 		std::cout << data.name << std::endl;
 	}
 }
-*/
+
 
 int findFiles(LPCWSTR directoryAddress) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
