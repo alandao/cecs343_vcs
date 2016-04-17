@@ -91,6 +91,8 @@ int main(int argc, char *argv[], char *envp[])
 		//filename is the time of changes made.
 		std::string nowDate(currentDateTime());
 		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
+		std::wcout << manifestName;
+		std::wcin >> manifestName;
 		std::wofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
 		outputFile << L"Previous manifest: " << lastManifestName << std::endl;
 
@@ -108,12 +110,17 @@ int main(int argc, char *argv[], char *envp[])
 
 	}
 	//co is to checkout
-	/*else if (arg1.compare("co") == 0) {
+	else if (arg1.compare("co") == 0) {
 		std::wstring sourcefolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
-		std::wstring version = std::wstring(arg2.begin(), arg2.end()) + L"/";
-		std::wstring targetfolder = std::wstring(arg4.begin(), arg4.end());
+		//std::wstring version = std::wstring(arg2.begin(), arg2.end()) + L"/";	Keep these redundant for now. Reimplement later.
+		//std::wstring targetfolder = std::wstring(arg4.begin(), arg4.end());
+		std::wstring targetFolder;
+		std::wcout << "Enter a target folder and version";
+		std::wcin >> targetFolder;
+		
+
 
 	}
-	*/
+	
 	return 0;
 }
