@@ -14,61 +14,6 @@
 #include "directory.h"
 #include "vcs.h"
 
-
-//This method will copy the entire folder structure from a directory to a target folder.
-int copyStructure(std::wstring directoryAddress, std::wstring target) {
-	HANDLE hFind = INVALID_HANDLE_VALUE;
-	WIN32_FIND_DATA ffd;
-	DWORD dwError = 0;
-
-	std::wstring dirAddress(directoryAddress);
-
-	// Find the first file in the directory.
-
-	hFind = FindFirstFile(dirAddress.c_str(), &ffd);
-
-	if (INVALID_HANDLE_VALUE == hFind)
-	{
-		DisplayErrorBox(TEXT("FindFirstFile"));
-		return dwError;
-	}
-
-	// List all the files in the directory with some info about them.
-	std::vector<std::wstring> directoryAddressses;
-	do
-	{
-		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-		{
-
-
-			std:: wstring back = ffd.cFileName;
-			if (back != L".." && back != L".") {
-
-				std::wstring newDirectory = target + L"/" + back;
-				CreateDirectory(newDirectory.c_str(), NULL);
-				std::wstring tempAddress(directoryAddress);
-				tempAddress.pop_back();
-				tempAddress.pop_back();
-
-				int result = copyStructure(tempAddress + L"/" + back + L"/**", newDirectory); 
-			}
-
-		}
-
-	} while (FindNextFile(hFind, &ffd) != 0);
-
-	dwError = GetLastError();
-	if (dwError != ERROR_NO_MORE_FILES)
-	{
-		DisplayErrorBox(TEXT("FindFirstFile"));
-	}
-
-	FindClose(hFind);
-	return dwError;
-}
-
-
-
 int main(int argc, char *argv[], char *envp[])
 {
 	//initialize the three arguments.
@@ -163,46 +108,26 @@ int main(int argc, char *argv[], char *envp[])
 
 	}
 	//co is to checkout
+
+
 	else if (arg1.compare("co") == 0) {
 		std::wstring sourceFolder = std::wstring(arg3.begin(), arg3.end()) +L"/";
 		std::wstring v = std::wstring(arg2.begin(), arg2.end()) + L"/";
 		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
 		int version = std::stoi(v);
-		
-		/* USED FOR MANUAL INPUT. 
-		std::wstring targetFolder;
-		std::wcout << "Enter a target folder and version" << std::endl;
-		std::wcin >> targetFolder;
-		int version;
-		std::cin >> version;
-		*/
 
 		//finding that version of the ptree
 		std::vector<std::wstring> manifestFiles;
-		std::wstring manifestLoc = std::wstring(sourceFolder) + std::wstring(L"repo343/manifest/**");
-		std::vector<Files> manifestFileDate;	
-		int result = findFiles(manifestLoc.c_str(), manifestFiles);
+		std::wstring manifestAddresses = std::wstring(sourceFolder) + std::wstring(L"repo343/manifest/**");
+		int result = findFiles(manifestAddresses.c_str(), manifestFiles);
 
-		Files tempf;
-		FILETIME ft;
-		HANDLE h;
-		//gets the creation date of all the manifest files
-		for (std::wstring x : manifestFiles) {
-			h = CreateFile(manifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
-			GetFileTime(h, &ft, NULL, NULL);
-			tempf.filename = x;
-			tempf.tm = ft;
-			manifestFileDate.push_back(tempf);
-			CloseHandle(h);
-		}
+		//sorting all the manifests
+		std::sort(manifestFiles.begin(), manifestFiles.end());
 
-		//sorts by date
-		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
-		//gets desired manifest
-		std::wstring manifest = manifestFileDate.at(version - 1).filename;
-		unsigned found = manifest.find_last_of(L"/\\");
-		std::wstring shortManifest = manifest.substr(found + 1);
-		std::wcout << shortManifest;
+		//gets desired manifest. full address and just the name
+		std::wstring fullManifest = manifestFiles.at(version - 1);
+		unsigned found = fullManifest.find_last_of(L"/\\");
+		std::wstring shortManifest = fullManifest.substr(found + 1);
 
 		//creating a new directory at the target folder and copying the folder structure
 		CreateDirectory(targetFolder.c_str(), NULL);
@@ -218,12 +143,12 @@ int main(int argc, char *argv[], char *envp[])
 
 		//utilizing contents of manifest and adding them to a vector
 		std::wstring line;
-		std::wifstream myfile(manifest);
-		std::vector <std::wstring> fileAddresses;
+		std::wifstream myfile(fullManifest);
+		std::vector <std::wstring> fileAddresses;//will contain addresses of all files specified in the manifest
 		std::wofstream newFile;
 		if (myfile.is_open())
 		{
-			getline(myfile, line);//first line is redundant for this process
+			getline(myfile, line);//first line is redundant for this process. :Created", "Copied", etc.
 			while (getline(myfile, line))
 			{
 				fileAddresses.push_back(line);
@@ -232,24 +157,22 @@ int main(int argc, char *argv[], char *envp[])
 		}
 		newFile.close();
 
-
-		//reading contents of manifests file locations and adding them to target folder
+		//reading contents of manifests file locations and adding them to user specified folder
 
 		for (std::wstring x : fileAddresses) {
-			unsigned found = x.find_first_of(L"/");
-			std::wstring tempAddress = x.substr(found, x.length()+1);//address of files without the source folder name
+			found = x.find_first_of(L"/");
+			std::wstring tempAddress = x.substr(found, x.length() + 1);//address of files without the source folder name
 			found = x.find_first_of(L" ");
 			std::wstring pureAddress = x.substr(found + 1, x.length() + 1);//full address of files without "Created" in the front
 			myfile.open (pureAddress);
 			newFile.open(targetFolder + tempAddress, std::ofstream::out);
-			manifestFile << std::endl << targetFolder + tempAddress;
+			manifestFile << std::endl << "Created " << targetFolder + tempAddress;
 			while (getline(myfile, line)) {
-
 				newFile << line;
 				if (myfile.peek() != EOF)
 					newFile << std::endl;
-
 			}
+
 			myfile.close();
 			newFile.close();
 		}

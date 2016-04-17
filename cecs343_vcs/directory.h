@@ -18,6 +18,13 @@ struct Files {
 //NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector);
 
+
+
+//Richard:: This method will copy the entire folder structure from a directory to a target folder.
+
+int copyStructure(std::wstring directoryAddress, std::wstring target);
+
+
 // Retrieve the system error message for the last-error code
 void DisplayErrorBox(LPTSTR lpszFunction);
 

@@ -71,6 +71,58 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 	return dwError;
 }
 
+
+int copyStructure(std::wstring directoryAddress, std::wstring target) {
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA ffd;
+	DWORD dwError = 0;
+
+	std::wstring dirAddress(directoryAddress);
+
+	// Find the first file in the directory.
+
+	hFind = FindFirstFile(dirAddress.c_str(), &ffd);
+
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		DisplayErrorBox(TEXT("FindFirstFile"));
+		return dwError;
+	}
+
+	// List all the files in the directory with some info about them.
+	std::vector<std::wstring> directoryAddressses;
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+
+
+			std::wstring back = ffd.cFileName;
+			if (back != L".." && back != L".") {
+
+				std::wstring newDirectory = target + L"/" + back;
+				CreateDirectory(newDirectory.c_str(), NULL);
+				std::wstring tempAddress(directoryAddress);
+				tempAddress.pop_back();
+				tempAddress.pop_back();
+
+				int result = copyStructure(tempAddress + L"/" + back + L"/**", newDirectory);
+			}
+
+		}
+
+	} while (FindNextFile(hFind, &ffd) != 0);
+
+	dwError = GetLastError();
+	if (dwError != ERROR_NO_MORE_FILES)
+	{
+		DisplayErrorBox(TEXT("FindFirstFile"));
+	}
+
+	FindClose(hFind);
+	return dwError;
+}
+
 const std::string currentDateTime() {
 	time_t     now = time(0);
 	struct tm  tstruct;
