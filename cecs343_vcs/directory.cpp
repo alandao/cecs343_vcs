@@ -108,3 +108,10 @@ void DisplayErrorBox(LPTSTR lpszFunction)
 }
 
 
+bool sortOnDate(const Files& fA, const Files& fB) {
+
+	FILETIME ftA, ftB;
+	ftA = fA.tm;
+	ftB = fB.tm;
+	return CompareFileTime(&ftA, &ftB)<0;
+}

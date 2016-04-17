@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-
+#include <iterator>
 #include <fstream>
 #include <time.h>
 //our libraries
@@ -52,19 +52,65 @@ int main(int argc, char *argv[], char *envp[])
 		}
 		outputFile.close();
 	}
-	//ci is to check in
-	else if (arg1.compare("ci") == 0) {
+	//to check in
+	else if (arg1.compare("check_in") == 0) {
 		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
 		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
 
+		std::vector<Files> manifestFiles;
 
+		
+
+
+
+
+
+
+
+
+
+
+
+
+		std::wstring tgtmanifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");//attach latest manifest here
+		//std::wstring srcmanifestLoc = std::wstring(sourcefolder) + std::wstring(L"repo343/manifest");
+		/*
+		if sourcechecksum !contained in folder, list in newmanifest
+		if sourcechecksum */
+		//if Chucksum vN != checksum vN+1 , then list as change in manifest, otherwise reuse old
+		//make a new file called manifest where appropriate, cat actions done to the manifest
+		//Filename is timestamp, contents are actions done. (added/removed/moved/edited files)
+		std::wstring manifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");
+		CreateDirectory(targetfolder.c_str(), NULL);
+		CreateDirectory((targetfolder + L"repo343/").c_str(), NULL);
+		CreateDirectory(manifestLoc.c_str(), NULL);
+
+		//filename is the time of changes made.
+		std::string nowDate(currentDateTime());
+		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
+		std::wofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
+		outputFile << "ptree number" << std::endl;
+
+		//Richard: This vector contains the addresses of all the files in a given repo. 
+		std::vector<std::wstring> filepaths;
+		std::wstring src = sourcefolder + L"**";
+		int result = findFiles(src.c_str(), filepaths);
+		std::wcout << L"Source Folder: " << sourcefolder << L"\nTarget Folder: " << targetfolder << std::endl;
+
+		for (std::wstring x : filepaths) {
+			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
+			outputFile << action << std::endl;
+		}
+		outputFile.close();
 
 	}
 	//co is to checkout
-	else if (arg1.compare("co") == 0) {
-		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
-		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
+	/*else if (arg1.compare("co") == 0) {
+		std::wstring sourcefolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
+		std::wstring version = std::wstring(arg2.begin(), arg2.end()) + L"/";
+		std::wstring targetfolder = std::wstring(arg4.begin(), arg4.end());
 
 	}
+	*/
 	return 0;
 }
