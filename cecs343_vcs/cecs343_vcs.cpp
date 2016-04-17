@@ -51,8 +51,20 @@ int main(int argc, char *argv[], char *envp[])
 			outputFile << action << std::endl;
 		}
 		outputFile.close();
-		
 	}
+	//ci is to check in
+	else if (arg1.compare("ci") == 0) {
+		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
+		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
 
+
+
+	}
+	//co is to checkout
+	else if (arg1.compare("co") == 0) {
+		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
+		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
+
+	}
 	return 0;
 }

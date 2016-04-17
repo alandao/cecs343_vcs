@@ -2,6 +2,8 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #include "vcs.h"
 
@@ -17,10 +19,20 @@ __int64 FileSize64(LPCWSTR szFileName)
 
 
 int CheckSum(LPCWSTR filepath) {
+	std::fstream fs(filepath, std::fstream::in);
+	char ch;
+	int chkSum = 0;
+	while (fs >> std::noskipws >> ch) {
+		chkSum = chkSum + ch;
+	}
+	return chkSum % 256;
+	
+	/*
 	int filesize = FileSize64(filepath);
 	if (filesize == -1)
 		return -1; //something bad happened.
 	return filesize % 256;
+	*/
 }
 
 
@@ -60,6 +72,6 @@ std::wstring TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 	//copy file from src to target folder and rename as artifact id.
 	CopyFile(filepath, newFilePath.c_str(), true);
 
-	std::wstring action(L"A " + newFilePath);
+	std::wstring action(L"Added " + newFilePath);
 	return action;
 }
