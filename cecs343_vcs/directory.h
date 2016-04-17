@@ -5,6 +5,9 @@
 #include <string>
 #include <io.h>
 
+//Used for counting amount of manfiests
+int numberOfFilesinDirectory(std::wstring directoryAddress);
+
 //Richard:: Send this method the address of a directory, and a vector where it will store the address of all the files
 //NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector);
