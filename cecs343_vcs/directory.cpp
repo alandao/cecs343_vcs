@@ -112,7 +112,6 @@ void DisplayErrorBox(LPTSTR lpszFunction)
 	LocalFree(lpDisplayBuf);
 }
 
-
 bool sortOnDate(const Files& fA, const Files& fB) {
 
 	FILETIME ftA, ftB;

@@ -10,7 +10,7 @@ int numberOfFilesinDirectory(std::wstring directoryAddress);
 
 //I don't know what this does, but it literally makes Files
 struct Files {
-	std::string filename;
+	std::wstring filename;
 	FILETIME tm;
 };
 

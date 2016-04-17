@@ -9,6 +9,7 @@
 #include <iterator>
 #include <fstream>
 #include <time.h>
+#include <algorithm>
 //our libraries
 #include "directory.h"
 #include "vcs.h"
@@ -56,30 +57,32 @@ int main(int argc, char *argv[], char *envp[])
 	else if (arg1.compare("check_in") == 0) {
 		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
 		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
+		//goes to where all the manifests are
+		std::vector<std::wstring> manifestFiles;
+		std::wstring tgtmanifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest/**");
+		int result = findFiles(tgtmanifestLoc.c_str(), manifestFiles);
 
-		std::vector<Files> manifestFiles;
+		std::vector<Files> manifestFileDate;
+		Files tempf;
+		FILETIME ft;
+		HANDLE h;
+		//gets the creation date of all the manifest files
+		for (std::wstring x : manifestFiles) {
+			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			GetFileTime(h, &ft, NULL, NULL);
+			tempf.filename = x;
+			tempf.tm = ft;
+			manifestFileDate.push_back(tempf);
+			CloseHandle(h);
+		}
+		//sorts by date, oldest to youngest
+		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
+		//gets the youngest file's name
+		std::wstring latestManifest = manifestFileDate.back().filename;
+		unsigned found = latestManifest.find_last_of(L"/\\");
+		std::wstring lastManifestName = latestManifest.substr(found + 1);
 
-		
-
-
-
-
-
-
-
-
-
-
-
-
-		std::wstring tgtmanifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");//attach latest manifest here
-		//std::wstring srcmanifestLoc = std::wstring(sourcefolder) + std::wstring(L"repo343/manifest");
-		/*
-		if sourcechecksum !contained in folder, list in newmanifest
-		if sourcechecksum */
-		//if Chucksum vN != checksum vN+1 , then list as change in manifest, otherwise reuse old
-		//make a new file called manifest where appropriate, cat actions done to the manifest
-		//Filename is timestamp, contents are actions done. (added/removed/moved/edited files)
+		//this is basically create_repo
 		std::wstring manifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");
 		CreateDirectory(targetfolder.c_str(), NULL);
 		CreateDirectory((targetfolder + L"repo343/").c_str(), NULL);
@@ -89,12 +92,12 @@ int main(int argc, char *argv[], char *envp[])
 		std::string nowDate(currentDateTime());
 		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
 		std::wofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
-		outputFile << "ptree number" << std::endl;
+		outputFile << L"Previous manifest: " << lastManifestName << std::endl;
 
 		//Richard: This vector contains the addresses of all the files in a given repo. 
 		std::vector<std::wstring> filepaths;
 		std::wstring src = sourcefolder + L"**";
-		int result = findFiles(src.c_str(), filepaths);
+		int result2 = findFiles(src.c_str(), filepaths);
 		std::wcout << L"Source Folder: " << sourcefolder << L"\nTarget Folder: " << targetfolder << std::endl;
 
 		for (std::wstring x : filepaths) {
