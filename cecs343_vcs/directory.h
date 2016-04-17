@@ -5,6 +5,9 @@
 #include <string>
 #include <io.h>
 
+//Used for counting amount of manfiests
+int numberOfFilesinDirectory(std::wstring directoryAddress);
+
 //I don't know what this does, but it literally makes Files
 struct Files {
 	std::string filename;
