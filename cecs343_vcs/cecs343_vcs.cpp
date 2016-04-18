@@ -107,6 +107,7 @@ int main(int argc, char *argv[], char *envp[])
 
 	}
 	//to checkout
+
 	else if (arg1.compare("check_out") == 0) {
 		std::string arg4 = argv[4];
 		std::wstring sourceFolder = std::wstring(arg3.begin(), arg3.end()) +L"/";
@@ -119,9 +120,6 @@ int main(int argc, char *argv[], char *envp[])
 		std::vector<std::wstring> manifestFiles;
 		std::wstring manifestAddresses = std::wstring(sourceFolder) + std::wstring(L"repo343/manifest/**");
 		int result = findFiles(manifestAddresses.c_str(), manifestFiles);
-
-		for (std::wstring x : manifestFiles)
-			std::wcout << std::endl << x;
 
 		//sorting all the manifests
 		std::vector<Files> manifestFileDate;
@@ -143,29 +141,13 @@ int main(int argc, char *argv[], char *envp[])
 
 		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
 		//gets the youngest file's name
-
-		std::wcout << "Listing as files" << std::endl;
-		for (Files x : manifestFileDate)
-			std::wcout << std::endl << x.filename;
-		std::wstring latestManifest = manifestFileDate.back().filename;
-		unsigned found = latestManifest.find_last_of(L"/\\");
-		std::wstring lastManifestName = latestManifest.substr(found + 1);
-
-
-
-
-
-		std::wcout << lastManifestName;
-
-
-		
+	
 
 		//gets desired manifest. full address and just the name
 		std::wcout << manifestFileDate.at(version - 1).filename;
 		std::wstring fullManifest = manifestFileDate.at(version - 1).filename;
-		found = fullManifest.find_last_of(L"/\\");
+		unsigned found = fullManifest.find_last_of(L"/\\");
 		std::wstring shortManifest = fullManifest.substr(found + 1);
-
 
 		//creating a new directory at the target folder and copying the folder structure
 		CreateDirectory(targetFolder.c_str(), NULL);
@@ -189,7 +171,6 @@ int main(int argc, char *argv[], char *envp[])
 			getline(myfile, line);//first line is redundant for this process. :"Created", "Copied", etc.
 			while (getline(myfile, line))
 			{
-				std::wcout << "Line:" << line << std::endl;
 				fileAddresses.push_back(line);
 			}
 			myfile.close();
@@ -220,7 +201,7 @@ int main(int argc, char *argv[], char *envp[])
 			myfile.close();
 			newFile.close();
 		}
-		std::wcin >> src;
+
 	}
 	
 	return 0;
