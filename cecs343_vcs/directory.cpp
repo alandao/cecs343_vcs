@@ -100,8 +100,11 @@ int copyStructure(std::wstring directoryAddress, std::wstring target) {
 			std::wstring back = ffd.cFileName;
 			if (back != L".." && back != L".") {
 
-				std::wstring newDirectory = target + L"/" + back;
+				//alan: ugly hack below so we dont make folders for files.
+				std::wstring newDirectory = target + L"/";
 				CreateDirectory(newDirectory.c_str(), NULL);
+				newDirectory = target + L"/" + back;
+
 				std::wstring tempAddress(directoryAddress);
 				tempAddress.pop_back();
 				tempAddress.pop_back();
