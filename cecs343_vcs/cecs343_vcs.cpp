@@ -73,8 +73,11 @@ int main(int argc, char *argv[], char *envp[])
 			manifestFileDate.push_back(tempf);
 			CloseHandle(h);
 		}
+
+		
 		//sorts by date, oldest to youngest
 		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
+
 		//gets the youngest file's name
 		std::wstring latestManifest = manifestFileDate.back().filename;
 		unsigned found = latestManifest.find_last_of(L"/\\");
@@ -140,6 +143,9 @@ int main(int argc, char *argv[], char *envp[])
 
 
 		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
+
+		for (Files x : manifestFileDate)
+			std::wcout << x.filename <<std::endl;
 		//gets the youngest file's name
 	
 
