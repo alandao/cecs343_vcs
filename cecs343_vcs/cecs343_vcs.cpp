@@ -116,28 +116,68 @@ int main(int argc, char *argv[], char *envp[])
 		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
 		int version = std::stoi(v);
 
+		std::wstring src = sourceFolder + L"/repo343/src_test";
 		//finding that version of the ptree
 		std::vector<std::wstring> manifestFiles;
 		std::wstring manifestAddresses = std::wstring(sourceFolder) + std::wstring(L"repo343/manifest/**");
 		int result = findFiles(manifestAddresses.c_str(), manifestFiles);
 
+		for (std::wstring x : manifestFiles)
+			std::wcout << std::endl << x;
+
 		//sorting all the manifests
-		std::sort(manifestFiles.begin(), manifestFiles.end());
+		std::vector<Files> manifestFileDate;
+		Files tempf;
+		FILETIME ft;
+		HANDLE h;
+		//gets the creation date of all the manifest files
+		for (std::wstring x : manifestFiles) {
+			h = CreateFile(manifestAddresses.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			GetFileTime(h, &ft, NULL, NULL);
+			tempf.filename = x;
+			tempf.tm = ft;
+			manifestFileDate.push_back(tempf);
+			CloseHandle(h);
+		}
+		//sorts by date, oldest to youngest
+
+
+
+		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
+		//gets the youngest file's name
+
+		std::wcout << "Listing as files" << std::endl;
+		for (Files x : manifestFileDate)
+			std::wcout << std::endl << x.filename;
+		std::wstring latestManifest = manifestFileDate.back().filename;
+		unsigned found = latestManifest.find_last_of(L"/\\");
+		std::wstring lastManifestName = latestManifest.substr(found + 1);
+
+
+
+
+
+		std::wcout << lastManifestName;
+
+
+		
 
 		//gets desired manifest. full address and just the name
-		std::wstring fullManifest = manifestFiles.at(version - 1);
-		unsigned found = fullManifest.find_last_of(L"/\\");
+		std::wcout << manifestFileDate.at(version - 1).filename;
+		std::wstring fullManifest = manifestFileDate.at(version - 1).filename;
+		found = fullManifest.find_last_of(L"/\\");
 		std::wstring shortManifest = fullManifest.substr(found + 1);
+
 
 		//creating a new directory at the target folder and copying the folder structure
 		CreateDirectory(targetFolder.c_str(), NULL);
-		result = copyStructure(sourceFolder + L"**", targetFolder);
+		result = copyStructure(src + L"/**", targetFolder);
 
 		//Creating a new manifest
 		std::wofstream manifestFile;
 		std::string date(currentDateTime());
 		std::wstring manifestName = std::wstring(date.begin(), date.end());
-		manifestFile.open(targetFolder + L"/repo343/manifest/" + manifestName + L".txt");
+		manifestFile.open(sourceFolder + L"/repo343/manifest/" + manifestName + L".txt");
 		manifestFile << "Copied from: " << shortManifest;
 
 
@@ -148,9 +188,10 @@ int main(int argc, char *argv[], char *envp[])
 		std::wofstream newFile;
 		if (myfile.is_open())
 		{
-			getline(myfile, line);//first line is redundant for this process. :Created", "Copied", etc.
+			getline(myfile, line);//first line is redundant for this process. :"Created", "Copied", etc.
 			while (getline(myfile, line))
 			{
+				std::wcout << "Line:" << line << std::endl;
 				fileAddresses.push_back(line);
 			}
 			myfile.close();
@@ -161,13 +202,18 @@ int main(int argc, char *argv[], char *envp[])
 
 		for (std::wstring x : fileAddresses) {
 			found = x.find_first_of(L"/");
-			std::wstring tempAddress = x.substr(found, x.length() + 1);//address of files without the source folder name
+			std::wstring tempAddress = x.substr(found, x.length() + 1);
+			tempAddress = tempAddress.substr(found - 1, tempAddress.length() + 1);//address of files without the source folder name
+			std::wcout << tempAddress;
 			found = x.find_first_of(L" ");
 			std::wstring pureAddress = x.substr(found + 1, x.length() + 1);//full address of files without "Created" in the front
 			myfile.open (pureAddress);
 			newFile.open(targetFolder + tempAddress, std::ofstream::out);
 			manifestFile << std::endl << "Created " << targetFolder + tempAddress;
+			std::wcout << std::endl <<  pureAddress;
+			std::wcout << std::endl << "Using " << targetFolder + tempAddress;
 			while (getline(myfile, line)) {
+				std::wcout << "Writing " << line << " to " << tempAddress;
 				newFile << line;
 				if (myfile.peek() != EOF)
 					newFile << std::endl;
@@ -176,6 +222,7 @@ int main(int argc, char *argv[], char *envp[])
 			myfile.close();
 			newFile.close();
 		}
+		std::wcin >> src;
 	}
 	
 	return 0;
