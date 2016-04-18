@@ -20,7 +20,6 @@ int main(int argc, char *argv[], char *envp[])
 	std::string arg1 = argv[1]; 
 	std::string arg2 = argv[2];
 	std::string arg3 = argv[3];
-	std::string arg4 = argv[4];
 
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
@@ -107,10 +106,9 @@ int main(int argc, char *argv[], char *envp[])
 		outputFile.close();
 
 	}
-	//co is to checkout
-
-
-	else if (arg1.compare("co") == 0) {
+	//to checkout
+	else if (arg1.compare("check_out") == 0) {
+		std::string arg4 = argv[4];
 		std::wstring sourceFolder = std::wstring(arg3.begin(), arg3.end()) +L"/";
 		std::wstring v = std::wstring(arg2.begin(), arg2.end()) + L"/";
 		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
