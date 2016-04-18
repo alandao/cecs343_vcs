@@ -66,7 +66,13 @@ int main(int argc, char *argv[], char *envp[])
 		HANDLE h;
 		//gets the creation date of all the manifest files
 		for (std::wstring x : manifestFiles) {
-			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			h = CreateFile(x.c_str(),
+				GENERIC_WRITE,
+				0,
+				NULL,
+				OPEN_ALWAYS,
+				FILE_ATTRIBUTE_NORMAL,
+				NULL);
 			GetFileTime(h, &ft, NULL, NULL);
 			tempf.filename = x;
 			tempf.tm = ft;
