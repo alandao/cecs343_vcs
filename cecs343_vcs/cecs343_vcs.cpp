@@ -118,7 +118,7 @@ int main(int argc, char *argv[], char *envp[])
 		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
 		int version = std::stoi(v);
 
-		std::wstring src = sourceFolder + L"repo343/src_test";
+		std::wstring src = sourceFolder + L"/repo343/src_test";
 		//finding that version of the ptree
 		std::vector<std::wstring> manifestFiles;
 		std::wstring manifestAddresses = std::wstring(sourceFolder) + std::wstring(L"repo343/manifest/**");
@@ -152,7 +152,7 @@ int main(int argc, char *argv[], char *envp[])
 		//gets desired manifest. full address and just the name
 		std::wcout << manifestFileDate.at(version - 1).filename;
 		std::wstring fullManifest = manifestFileDate.at(version - 1).filename;
-		std::size_t found = fullManifest.find_last_of(L"/\\");
+		unsigned found = fullManifest.find_last_of(L"/\\");
 		std::wstring shortManifest = fullManifest.substr(found + 1);
 
 		//creating a new directory at the target folder and copying the folder structure
@@ -189,34 +189,11 @@ int main(int argc, char *argv[], char *envp[])
 			found = x.find_first_of(L"/");
 			std::wstring tempAddress = x.substr(found, x.length() + 1);
 			tempAddress = tempAddress.substr(found - 1, tempAddress.length() + 1);//address of files without the source folder name
-			found = tempAddress.find_first_of(L"/");
-
-			//alan: a ugly hack in order to properly make the new files.
-			//split filepath into a list divided by '/'
-			found = 0;
-			std::vector<std::wstring> tokenizedTempAddress;
-			while (found != std::wstring::npos) {
-				found = tempAddress.find_first_of(L"/");
-				std::wstring tokenPath = tempAddress.substr(0, found);
-				tempAddress = tempAddress.substr(found + 1, tempAddress.length() - 1);
-				tokenizedTempAddress.push_back(tokenPath);
-			}
-			tokenizedTempAddress.pop_back();
-			//tempAddress = ALL elements minus the last element concatenated together 
-			//with '/' in between
-			tempAddress = L"";
-			for (auto x : tokenizedTempAddress) {
-				tempAddress += x + L"/";
-			}
-			//delete extra '/' at the end of tempAddress
-			tempAddress = tempAddress.substr(0, tempAddress.length() - 1);
-
-			std::wcout << std::endl << tempAddress;
+			std::wcout << tempAddress;
 			found = x.find_first_of(L" ");
 			std::wstring pureAddress = x.substr(found + 1, x.length() + 1);//full address of files without "Created" in the front
-			
 			myfile.open (pureAddress);
-			newFile.open(targetFolder + L"/" +  tempAddress, std::ofstream::out);
+			newFile.open(targetFolder + tempAddress, std::ofstream::out);
 			manifestFile << std::endl << "Created " << targetFolder + tempAddress;
 			std::wcout << std::endl <<  pureAddress;
 			std::wcout << std::endl << "Using " << targetFolder + tempAddress;

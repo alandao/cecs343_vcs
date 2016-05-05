@@ -90,7 +90,6 @@ int copyStructure(std::wstring directoryAddress, std::wstring target) {
 	}
 
 	// List all the files in the directory with some info about them.
-	std::vector<std::wstring> directoryAddressses;
 	do
 	{
 		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -100,11 +99,8 @@ int copyStructure(std::wstring directoryAddress, std::wstring target) {
 			std::wstring back = ffd.cFileName;
 			if (back != L".." && back != L".") {
 
-				//alan: ugly hack below so we dont make folders for files.
-				std::wstring newDirectory = target + L"/";
+				std::wstring newDirectory = target + L"/" + back;
 				CreateDirectory(newDirectory.c_str(), NULL);
-				newDirectory = target + L"/" + back;
-
 				std::wstring tempAddress(directoryAddress);
 				tempAddress.pop_back();
 				tempAddress.pop_back();
