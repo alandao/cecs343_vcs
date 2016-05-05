@@ -5,13 +5,30 @@
 #include <string>
 #include <io.h>
 
-//Will dump out all the info. Folders are printed out in brackets[]
-void DumpEntry(_finddata_t &data, const char * address);
+//Used for counting amount of manfiests
+int numberOfFilesinDirectory(std::wstring directoryAddress);
 
-/*will find all files in the given address*/
-int findFiles(LPCWSTR);
+//I don't know what this does, but it literally makes Files
+struct Files {
+	std::wstring filename;
+	FILETIME tm;
+};
 
-std::string Chop(std::string &str);
+//Richard:: Send this method the address of a directory, and a vector where it will store the address of all the files
+//NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
+int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector);
+
+//Richard:: This method will copy the entire folder structure from a directory to a target folder.
+
+int copyStructure(std::wstring directoryAddress, std::wstring target);
 
 // Retrieve the system error message for the last-error code
 void DisplayErrorBox(LPTSTR lpszFunction);
+
+//Local time returned in YYYY-MM-DD @ HH;MM;SS format
+//Windows is dumb and won't let me use colons (:). Thanks Bill Gates.
+const std::string currentDateTime();
+
+//Sorts by date, returns a bool if something is greater. 
+//yeah.
+bool sortOnDate(const Files& fA, const Files& fB);
