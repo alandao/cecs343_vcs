@@ -4,46 +4,22 @@
 #include <strsafe.h>
 #include <time.h>
 #include <atlbase.h>
+#include <vector>
 
 #include "directory.h"
 
 // alan: we shouldn't need <iostream> when this module is done since we want findFiles to return 
 // a std::vector<std::string>
-#include <iostream>
 
-
-
-/*the asterisks are required at the end of the address. In between them specify the type of file you want, or leave
-them empty to look for all files, including folders.*/
-
-void DumpEntry(_finddata_t &data, const char * address) {
-	std::string createtime(ctime(&data.time_create));
-	std::cout << Chop(createtime) << "\t";
-	std::cout << data.size << "\t";
-
-	//this if statement will execute when a subdirectory has been found
-	if ((data.attrib & _A_SUBDIR) == _A_SUBDIR) {
-		std::cout << "[" << data.name << "]" << std::endl;
-		std::string temp = address;
-		temp.pop_back();
-		temp.pop_back();
-		temp = temp + data.name + "/**";
-		std::string folder = data.name;
-		std::cout << temp << std::endl;
-		if (folder == "x64") {
-			//findFiles(temp.c_str());
-		}
-	}
-	else {
-		std::cout << data.name << std::endl;
-	}
+int numberOfFilesinDirectory(std::wstring directoryAddress) {
+	std::vector<std::wstring> filepaths;
+	int result = findFiles(directoryAddress.c_str(), filepaths);
+	return filepaths.size();
 }
 
-
-int findFiles(LPCWSTR directoryAddress) {
+int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
-	LARGE_INTEGER filesize;
 	DWORD dwError = 0;
 
 	std::wstring dirAddress(directoryAddress);
@@ -63,13 +39,25 @@ int findFiles(LPCWSTR directoryAddress) {
 	{
 		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
+			std::wstring tempString(dirAddress);
+			std::wstring back = ffd.cFileName;
+			tempString.pop_back();
+			tempString.pop_back();
+			tempString += ffd.cFileName;
+			//std::wcout << tempString;
+			if (back != L".." && back != L".") {
+				tempString += L"/**";
+				findFiles(tempString, addressVector);
+			}
+
 		}
 		else
 		{
-			filesize.LowPart = ffd.nFileSizeLow;
-			filesize.HighPart = ffd.nFileSizeHigh;
-			_tprintf(TEXT("  %s   %ld bytes\n"), ffd.cFileName, filesize.QuadPart);
+			std::wstring location = directoryAddress;
+			location.pop_back();
+			location.pop_back();
+			location += ffd.cFileName;
+			addressVector.push_back(location);
 		}
 	} while (FindNextFile(hFind, &ffd) != 0);
 
@@ -83,20 +71,65 @@ int findFiles(LPCWSTR directoryAddress) {
 	return dwError;
 }
 
-std::string Chop(std::string &str) {
-	std::string res = str;
-	int len = str.length();
-	if (str[len - 1] == '\r') {
-		res.replace(len - 1, 1, "");
+
+int copyStructure(std::wstring directoryAddress, std::wstring target) {
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA ffd;
+	DWORD dwError = 0;
+
+	std::wstring dirAddress(directoryAddress);
+
+	// Find the first file in the directory.
+
+	hFind = FindFirstFile(dirAddress.c_str(), &ffd);
+
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		DisplayErrorBox(TEXT("FindFirstFile"));
+		return dwError;
 	}
-	len = str.length();
-	if (str[len - 1] == '\n') {
-		res.replace(len - 1, 1, "");
+
+	// List all the files in the directory with some info about them.
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+
+
+			std::wstring back = ffd.cFileName;
+			if (back != L".." && back != L".") {
+
+				std::wstring newDirectory = target + L"/" + back;
+				CreateDirectory(newDirectory.c_str(), NULL);
+				std::wstring tempAddress(directoryAddress);
+				tempAddress.pop_back();
+				tempAddress.pop_back();
+
+				int result = copyStructure(tempAddress + L"/" + back + L"/**", newDirectory);
+			}
+
+		}
+
+	} while (FindNextFile(hFind, &ffd) != 0);
+
+	dwError = GetLastError();
+	if (dwError != ERROR_NO_MORE_FILES)
+	{
+		DisplayErrorBox(TEXT("FindFirstFile"));
 	}
-	return res;
+
+	FindClose(hFind);
+	return dwError;
 }
 
-
+const std::string currentDateTime() {
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       buf[80];
+	localtime_s(&tstruct, &now);
+	strftime(buf, sizeof(buf), "%Y-%m-%d @ %I;%M;%S %p", &tstruct);
+	return buf;
+}
 
 void DisplayErrorBox(LPTSTR lpszFunction)
 {
@@ -130,4 +163,10 @@ void DisplayErrorBox(LPTSTR lpszFunction)
 	LocalFree(lpDisplayBuf);
 }
 
+bool sortOnDate(const Files& fA, const Files& fB) {
 
+	FILETIME ftA, ftB;
+	ftA = fA.tm;
+	ftB = fB.tm;
+	return CompareFileTime(&ftA, &ftB)<0;
+}
