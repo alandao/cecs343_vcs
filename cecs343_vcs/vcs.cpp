@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include "vcs.h"
-
+//
 
 __int64 FileSize64(LPCWSTR szFileName)
 {

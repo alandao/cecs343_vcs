@@ -10,7 +10,7 @@
 
 // alan: we shouldn't need <iostream> when this module is done since we want findFiles to return 
 // a std::vector<std::string>
-
+//
 int numberOfFilesinDirectory(std::wstring directoryAddress) {
 	std::vector<std::wstring> filepaths;
 	int result = findFiles(directoryAddress.c_str(), filepaths);
