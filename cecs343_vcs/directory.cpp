@@ -5,6 +5,8 @@
 #include <time.h>
 #include <atlbase.h>
 #include <vector>
+#include <stdlib.h>
+#include <fstream>
 
 #include "directory.h"
 
@@ -168,9 +170,29 @@ void DisplayErrorBox(LPTSTR lpszFunction)
 }
 
 bool sortOnDate(const Files& fA, const Files& fB) {
-
 	FILETIME ftA, ftB;
 	ftA = fA.tm;
 	ftB = fB.tm;
 	return CompareFileTime(&ftA, &ftB)<0;
+}
+
+std::wstring fullFilePath(const std::wstring& relativePath) {
+	wchar_t full[_MAX_PATH];
+	if (_wfullpath(full, relativePath.c_str(), _MAX_PATH) != NULL)
+		return std::wstring(full);
+	else
+		return std::wstring(L"");
+}
+
+std::wstring lineFromFile(const std::wstring& filename, int n) {
+	std::wifstream in(filename.c_str());
+
+	std::wstring s;
+	
+	//skip N lines
+	for (int i = 0; i < n; i++)
+		std::getline(in, s);
+
+	std::getline(in, s);
+	return s;
 }

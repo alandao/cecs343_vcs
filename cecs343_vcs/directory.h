@@ -35,3 +35,9 @@ const std::string currentDateTime();
 //Sorts by date, returns a bool if something is greater. 
 //yeah.
 bool sortOnDate(const Files& fA, const Files& fB);
+
+//returns a full filepath from a relative path.
+std::wstring fullFilePath(const std::wstring& relativePath);
+
+//returns the nTh line of a file.
+std::wstring lineFromFile(const std::wstring& filename, int n);
