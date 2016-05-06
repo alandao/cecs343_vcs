@@ -234,6 +234,11 @@ int main(int argc, char *argv[], char *envp[])
 		}
 
 	}
+	else if (arg1.compare("merge") == 0) {
+		std::wstring repoManifest = std::wstring(arg2.begin(), arg2.end());
+		std::wstring targetFolder = std::wstring(arg3.begin(), arg3.end());
+
+	}
 	
 	return 0;
 }
