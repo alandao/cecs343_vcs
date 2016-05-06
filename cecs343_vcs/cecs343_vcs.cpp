@@ -3,6 +3,8 @@
 // USAGE: cecs343_vcs create_repo sourcefolder targetfolder
 //	This will create a repo at the target folder.
 
+//test commit
+
 #include <string>
 #include <iostream>
 #include <vector>
