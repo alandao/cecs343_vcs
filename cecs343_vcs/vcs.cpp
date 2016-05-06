@@ -75,3 +75,15 @@ std::wstring TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 	std::wstring action(L"Created " + newFilePath);
 	return action;
 }
+
+std::vector<std::wstring> split(std::wstring str) {
+	std::vector<std::wstring> internal;
+	std::wstringstream ss(str); // Turn the string into a stream.
+	std::wstring tok;
+
+	while (std::getline(ss, tok, L'/')) {
+		internal.push_back(tok);
+	}
+
+	return internal;
+}

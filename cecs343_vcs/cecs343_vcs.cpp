@@ -235,8 +235,82 @@ int main(int argc, char *argv[], char *envp[])
 
 	}
 	else if (arg1.compare("merge") == 0) {
-		std::wstring repoManifest = std::wstring(arg2.begin(), arg2.end());
-		std::wstring targetFolder = std::wstring(arg3.begin(), arg3.end());
+		//Register command in main as : cecs343_vcs merge REPO MANIFEST1 TARGETFOLDER
+		std::string arg4 = argv[4];
+		std::wstring repoFolder = std::wstring(arg2.begin(), arg2.end());
+		std::wstring manifestName = std::wstring(arg3.begin(), arg3.end());
+		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
+		std::vector<std::wstring> rManifestLines;
+		std::vector<std::wstring> tManifestLines;
+
+		std::wstring manifestAddress = std::wstring(repoFolder) + std::wstring(L"/repo343/manifest/") + std::wstring(manifestName);
+
+		std::wstring strHold;
+		std::wifstream rManifest, tManifest;
+
+		//goes to where all the manifests are
+		std::vector<std::wstring> manifestFiles;
+		std::wstring tgtmanifestLoc = std::wstring(targetFolder) + std::wstring(L"/repo343/manifest/**");
+		int result = findFiles(tgtmanifestLoc.c_str(), manifestFiles);
+
+		std::vector<Files> manifestFileDate;
+		Files tempf;
+		FILETIME ft;
+		HANDLE h;
+		//gets the creation date of all the manifest files
+		for (std::wstring x : manifestFiles) {
+			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			GetFileTime(h, &ft, NULL, NULL);
+			tempf.filename = x;
+			tempf.tm = ft;
+			manifestFileDate.push_back(tempf);
+			CloseHandle(h);
+		}
+
+		//sorts by date, oldest to youngest
+		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
+
+		//gets the youngest file's name
+		std::wstring latestManifest = manifestFileDate.back().filename;
+		unsigned found = latestManifest.find_last_of(L"/\\");
+		std::wstring lastManifestName = latestManifest.substr(found + 1);
+
+		rManifest.open(manifestAddress);
+		//get all lines to the end
+		while (!rManifest.eof()) {
+			std::getline(rManifest, strHold, L'\n');
+			std::wcout << strHold << std::endl;
+			rManifestLines.push_back(strHold);
+		}
+		rManifest.close();
+		tManifest.open(latestManifest);
+		while (!tManifest.eof()) {
+			std::getline(tManifest, strHold, L'\n');
+			std::wcout << strHold << std::endl;
+			tManifestLines.push_back(strHold);
+		}
+		tManifest.close();
+		std::vector<std::wstring> rDelimStr;
+		std::vector<std::wstring> tDelimStr;
+
+		std::vector<std::wstring>::iterator it;
+		int i = 0;
+		//Iterate through comparing the left (rManifest) to the right (tManifest).
+		//uses a while loop, incrementing only when we have differences.
+		//We artifically move through the vector by removing similarities at 0, any differences get left behind as we increment past it.
+		while(i < rManifestLines.size()) {
+			it = find(tManifestLines.begin(), tManifestLines.end(), rManifestLines.at(i));
+			//Things were the same
+			if (it != tManifestLines.end()) {
+				rManifestLines.erase(rManifestLines.begin());
+				tManifestLines.erase(it);
+			}
+			else {
+				//Things were different
+				i++;
+			}
+		}
+
 
 	}
 	

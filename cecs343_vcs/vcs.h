@@ -14,3 +14,6 @@ int CheckSum(LPCWSTR filepath);
 
 //Tracks a file into the repo. Returns an string log that will be recorded in the manifest.
 std::wstring TrackFile(LPCWSTR filepath, LPCWSTR targetfolder);
+
+//Splits a string using a '/' as a delimiter.
+std::vector<std::wstring> split(std::wstring str);
