@@ -41,3 +41,6 @@ std::wstring fullFilePath(const std::wstring& relativePath);
 
 //returns the nTh line of a file.
 std::wstring lineFromFile(const std::wstring& filename, int n);
+
+//splits string on a delimiter
+std::vector<std::wstring> split(const std::wstring &s, std::wstring delim);

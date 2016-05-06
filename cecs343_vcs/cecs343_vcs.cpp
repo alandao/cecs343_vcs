@@ -26,26 +26,24 @@ int main(int argc, char *argv[], char *envp[])
 	//if arg1 is equal to create_repo, create a repo.
 	if (arg1.compare("create_repo") == 0) {
 		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
-		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
+		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end());
 
 		//make a new file called manifest where appropriate, cat actions done to the manifest
 		//Filename is timestamp, contents are actions done. (added/removed/moved/edited files)
-		std::wstring manifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest");
 		CreateDirectory(targetfolder.c_str(), NULL);
 		CreateDirectory((targetfolder + L"repo343/").c_str(), NULL);
-		CreateDirectory(manifestLoc.c_str(), NULL);
+		CreateDirectory((targetfolder + L"repo343/manifest").c_str(), NULL);
 
 		//filename is the time of changes made.
 		std::string nowDate(currentDateTime());
 		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
-		std::wofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
-		outputFile << L"I was born." << std::endl;
+		std::wofstream outputFile(targetfolder + L"repo343/manifest" + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
+		outputFile << L"@" + fullFilePath(sourcefolder) << std::endl << L"Parent: None" << std::endl;
 
 		//Richard: This vector contains the addresses of all the files in a given repo. 
 		std::vector<std::wstring> filepaths;
-		std::wstring src = sourcefolder + L"**";
+		std::wstring src = sourcefolder + L"/**";
 		int result = findFiles(src.c_str(), filepaths);
-		std::wcout << L"Source Folder: " << sourcefolder << L"\nTarget Folder: " << targetfolder << std::endl;
 
 		for (std::wstring x : filepaths) {
 			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
@@ -55,33 +53,41 @@ int main(int argc, char *argv[], char *envp[])
 	}
 	//to check in
 	else if (arg1.compare("check_in") == 0) {
+		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end());
 		std::wstring targetfolder = std::wstring(arg3.begin(), arg3.end()) + L"/";
-		std::wstring sourcefolder = std::wstring(arg2.begin(), arg2.end()) + L"/";
-		//goes to where all the manifests are
-		std::vector<std::wstring> manifestFiles;
-		std::wstring tgtmanifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest/**");
-		int result = findFiles(tgtmanifestLoc.c_str(), manifestFiles);
 
-		std::vector<Files> manifestFileDate;
+		//goes to where all the manifests are
+		std::vector<std::wstring> manifestFilepaths;
+		std::wstring tgtmanifestLoc = std::wstring(targetfolder) + std::wstring(L"repo343/manifest/**");
+		int result = findFiles(tgtmanifestLoc.c_str(), manifestFilepaths);
+
+		std::vector<Files> manifestFiles;
 		Files tempf;
 		FILETIME ft;
 		HANDLE h;
 		//gets the creation date of all the manifest files
-		for (std::wstring x : manifestFiles) {
+		for (std::wstring x : manifestFilepaths) {
 			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
 			GetFileTime(h, &ft, NULL, NULL);
 			tempf.filename = x;
 			tempf.tm = ft;
-			manifestFileDate.push_back(tempf);
+			manifestFiles.push_back(tempf);
 			CloseHandle(h);
 		}
 
 		
 		//sorts by date, oldest to youngest
-		std::sort(manifestFileDate.begin(), manifestFileDate.end(), sortOnDate);
+		std::sort(manifestFiles.begin(), manifestFiles.end(), sortOnDate);
 
-		//gets the youngest file's name
-		std::wstring latestManifest = manifestFileDate.back().filename;
+		//gets the youngest manifest's name whose src folder matches our src folder
+		//filter out all manifestFiles who aren't from the same src folder
+
+		auto newEnd = std::remove_if(manifestFiles.begin(), manifestFiles.end(), [&sourcefolder](const Files x) {
+			return ((L"@" + fullFilePath(sourcefolder)).compare(lineFromFile(x.filename, 1)) != 0);
+		});
+		manifestFiles.erase(newEnd, manifestFiles.end());
+
+		std::wstring latestManifest = manifestFiles.back().filename;
 		unsigned found = latestManifest.find_last_of(L"/\\");
 		std::wstring lastManifestName = latestManifest.substr(found + 1);
 
@@ -96,13 +102,12 @@ int main(int argc, char *argv[], char *envp[])
 		std::wstring manifestName = std::wstring(nowDate.begin(), nowDate.end());
 
 		std::wofstream outputFile(manifestLoc + std::wstring(L"/") + manifestName + std::wstring(L".txt"));
-		outputFile << L"Previous manifest: " << lastManifestName << std::endl;
+		outputFile << L"@" + fullFilePath(sourcefolder) << std::endl << L"Parent: " + lastManifestName << std::endl;
 
 		//Richard: This vector contains the addresses of all the files in a given repo. 
 		std::vector<std::wstring> filepaths;
-		std::wstring src = sourcefolder + L"**";
+		std::wstring src = sourcefolder + L"/**";
 		int result2 = findFiles(src.c_str(), filepaths);
-		std::wcout << L"Source Folder: " << sourcefolder << L"\nTarget Folder: " << targetfolder << std::endl;
 
 		for (std::wstring x : filepaths) {
 			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
@@ -120,7 +125,6 @@ int main(int argc, char *argv[], char *envp[])
 		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
 		int version = std::stoi(v);
 
-		std::wstring src = sourceFolder + L"repo343/src_test";
 		//finding that version of the ptree
 		std::vector<std::wstring> manifestFiles;
 		std::wstring manifestAddresses = std::wstring(sourceFolder) + std::wstring(L"repo343/manifest/**");
@@ -157,6 +161,11 @@ int main(int argc, char *argv[], char *envp[])
 		std::size_t found = fullManifest.find_last_of(L"/\\");
 		std::wstring shortManifest = fullManifest.substr(found + 1);
 
+		std::wstring firstLineManifest = lineFromFile(fullManifest, 1);
+		std::wstring projectTreeName = split(firstLineManifest, L"\\").back();
+
+		std::wstring src = sourceFolder + L"repo343/" + projectTreeName;
+
 		//creating a new directory at the target folder and copying the folder structure
 		CreateDirectory(targetFolder.c_str(), NULL);
 		result = copyStructure(src + L"/**", targetFolder);
@@ -166,7 +175,7 @@ int main(int argc, char *argv[], char *envp[])
 		std::string date(currentDateTime());
 		std::wstring manifestName = std::wstring(date.begin(), date.end());
 		manifestFile.open(sourceFolder + L"/repo343/manifest/" + manifestName + L".txt");
-		manifestFile << "Copied from: " << shortManifest;
+		manifestFile << L"@" + fullFilePath(targetFolder) << std::endl << L"Parent: " + shortManifest << std::endl;
 
 
 		//utilizing contents of manifest and adding them to a vector
@@ -176,10 +185,12 @@ int main(int argc, char *argv[], char *envp[])
 		std::wofstream newFile;
 		if (myfile.is_open())
 		{
-			getline(myfile, line);//first line is redundant for this process. :"Created", "Copied", etc.
+			getline(myfile, line);//first line is redundant for this process.
+			getline(myfile, line);//second line is reundant since it's "parent: asdf"
 			while (getline(myfile, line))
 			{
 				fileAddresses.push_back(line);
+				manifestFile << line << std::endl;
 			}
 			myfile.close();
 		}
@@ -188,49 +199,20 @@ int main(int argc, char *argv[], char *envp[])
 		//reading contents of manifests file locations and adding them to user specified folder
 
 		for (std::wstring x : fileAddresses) {
-			found = x.find_first_of(L"/");
-			std::wstring tempAddress = x.substr(found, x.length() + 1);
-			tempAddress = tempAddress.substr(found - 1, tempAddress.length() + 1);//address of files without the source folder name
-			found = tempAddress.find_first_of(L"/");
-
-			//alan: a ugly hack in order to properly make the new files.
-			//split filepath into a list divided by '/'
-			found = 0;
-			std::vector<std::wstring> tokenizedTempAddress;
-			while (found != std::wstring::npos) {
-				found = tempAddress.find_first_of(L"/");
-				std::wstring tokenPath = tempAddress.substr(0, found);
-				tempAddress = tempAddress.substr(found + 1, tempAddress.length() - 1);
-				tokenizedTempAddress.push_back(tokenPath);
+			std::vector<std::wstring> tokens = split(x, L"/");
+			//delete first 3 elements because it is REPO/REPO343/SRCTREE
+			tokens.erase(tokens.begin());
+			tokens.erase(tokens.begin());
+			tokens.erase(tokens.begin());
+			//delete last element since it is artifact ID
+			tokens.pop_back();
+			std::wstring filePathIncludingTargetFolder = targetFolder;
+			for (auto x : tokens) {
+				filePathIncludingTargetFolder = filePathIncludingTargetFolder + L"/" + x;
 			}
-			tokenizedTempAddress.pop_back();
-			//tempAddress = ALL elements minus the last element concatenated together 
-			//with '/' in between
-			tempAddress = L"";
-			for (auto x : tokenizedTempAddress) {
-				tempAddress += x + L"/";
+			if (!CopyFileW(x.c_str(), filePathIncludingTargetFolder.c_str(), false)) {
+				std::cout << "Could not copy file!.\n" << std::endl;
 			}
-			//delete extra '/' at the end of tempAddress
-			tempAddress = tempAddress.substr(0, tempAddress.length() - 1);
-
-			std::wcout << std::endl << tempAddress;
-			found = x.find_first_of(L" ");
-			std::wstring pureAddress = x.substr(found + 1, x.length() + 1);//full address of files without "Created" in the front
-			
-			myfile.open (pureAddress);
-			newFile.open(targetFolder + L"/" +  tempAddress, std::ofstream::out);
-			manifestFile << std::endl << "Created " << targetFolder + tempAddress;
-			std::wcout << std::endl <<  pureAddress;
-			std::wcout << std::endl << "Using " << targetFolder + tempAddress;
-			while (getline(myfile, line)) {
-				std::wcout << "Writing " << line << " to " << tempAddress;
-				newFile << line;
-				if (myfile.peek() != EOF)
-					newFile << std::endl;
-			}
-
-			myfile.close();
-			newFile.close();
 		}
 
 	}

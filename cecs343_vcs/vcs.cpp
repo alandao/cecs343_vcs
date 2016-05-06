@@ -72,7 +72,7 @@ std::wstring TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 	//copy file from src to target folder and rename as artifact id.
 	CopyFile(filepath, newFilePath.c_str(), true);
 
-	std::wstring action(L"Created " + newFilePath);
+	std::wstring action(newFilePath);
 	return action;
 }
 
