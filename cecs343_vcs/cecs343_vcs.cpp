@@ -217,6 +217,9 @@ int main(int argc, char *argv[], char *envp[])
 
 	}
 	else if (arg1.compare("merge") == 0) {
+		//TODO:
+		//Copy files over the way they should be done
+
 		//Register command in main as : cecs343_vcs merge REPO MANIFEST1 TARGETFOLDER
 		std::string arg4 = argv[4];
 		std::wstring repoFolder = std::wstring(arg2.begin(), arg2.end());
@@ -230,6 +233,7 @@ int main(int argc, char *argv[], char *envp[])
 		std::wstring strHold;
 		std::wifstream rManifest, tManifest;
 
+		//Start Manifest Find
 		//goes to where all the manifests are
 		std::vector<std::wstring> manifestFiles;
 		std::wstring tgtmanifestLoc = std::wstring(targetFolder) + std::wstring(L"/repo343/manifest/**");
@@ -256,7 +260,9 @@ int main(int argc, char *argv[], char *envp[])
 		std::wstring latestManifest = manifestFileDate.back().filename;
 		unsigned found = latestManifest.find_last_of(L"/\\");
 		std::wstring lastManifestName = latestManifest.substr(found + 1);
+		//End Manifest Find
 
+		//Joel's shit below this
 		rManifest.open(manifestAddress);
 		//get all lines to the end
 		while (!rManifest.eof()) {
@@ -274,26 +280,73 @@ int main(int argc, char *argv[], char *envp[])
 		tManifest.close();
 		std::vector<std::wstring> rDelimStr;
 		std::vector<std::wstring> tDelimStr;
-
+		
 		std::vector<std::wstring>::iterator it;
-		int i = 0;
+		std::vector<std::wstring>::iterator it2;
+
+		std::wstring newLoc;
+
 		//Iterate through comparing the left (rManifest) to the right (tManifest).
 		//uses a while loop, incrementing only when we have differences.
 		//We artifically move through the vector by removing similarities at 0, any differences get left behind as we increment past it.
+		int i = 0;
 		while(i < rManifestLines.size()) {
 			it = find(tManifestLines.begin(), tManifestLines.end(), rManifestLines.at(i));
 			//Things were the same
 			if (it != tManifestLines.end()) {
+				//CopyFile(rManifestLines.at(i).c_str(), , true); Technically do nothing
 				rManifestLines.erase(rManifestLines.begin());
 				tManifestLines.erase(it);
 			}
 			else {
 				//Things were different
+				rDelimStr = split(rManifestLines.at(i));
+				//find the filepath - end() index inside tManifest
+				//if it exists, compare the last ending portion and then stick em inside a folder after a rename
+				//current code status: can find the second to last file path portion, but not the whole thing minus the end
+				std::wstring temp = *(rDelimStr.begin(), rDelimStr.end() - 3)+ L'/' + *(rDelimStr.begin(), rDelimStr.end() - 2);
+				it2 = find(tManifestLines.begin(), tManifestLines.end() - 2, temp);
+				//File path is the same
+				if (it2 != tManifestLines.end()) {
+					std::wcout << "Something" << std::endl;
+					tDelimStr = split(*it2);
+					//the file artifact sizes are different
+					if (rDelimStr.back() != tDelimStr.back()){
+						std::wcout << rDelimStr.back() << L'\n' << tDelimStr.back() << std::endl;
+						//Make a new folder of both files in the target
+
+						/*std::wstring mergedDir = (targetFolder + L"/" + *(tManifestLines.end() - 2) + L"/");
+						std::wstring newRName, newTName;
+						newRName = *(rDelimStr.end() - 2) + L"_MR";
+						newTName = *(tDelimStr.end() - 2) + L"_MT";
+						for (std::wstring x : rManifestLines) {
+							std::vector<std::wstring> tokens = split(x, L"/");
+							//delete first 3 elements because it is REPO/REPO343/SRCTREE
+							tokens.erase(tokens.begin());
+							tokens.erase(tokens.begin());
+							tokens.erase(tokens.begin());
+							//delete last element since it is artifact ID
+							tokens.pop_back();
+							std::wstring filePathIncludingTargetFolder = targetFolder;
+							for (auto x : tokens) {
+								filePathIncludingTargetFolder = filePathIncludingTargetFolder + L"/" + x;
+							}
+							if (!CopyFileW(x.c_str(), filePathIncludingTargetFolder.c_str(), false)) {
+								std::cout << "Could not copy file!.\n" << std::endl;
+							}
+						}*/
+						//CreateDirectory(mergedDir.c_str(), NULL);
+						//CopyFile((mergedDir + newRName).c_str(), );
+					}
+				}
+				std::wcout << temp << std::endl;
 				i++;
 			}
+			//here is where we take the leftovers in both vectors and add them back in
+			//they are files that didn't exist in either ptree
 		}
 
-
+		std::cout << " " << std::endl;
 	}
 	
 	return 0;
