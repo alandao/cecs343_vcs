@@ -7,6 +7,8 @@
 #include <vector>
 #include <stdlib.h>
 #include <fstream>
+#include <sstream>
+#include <vector>
 
 #include "directory.h"
 
@@ -195,4 +197,18 @@ std::wstring lineFromFile(const std::wstring& filename, int n) {
 
 	std::getline(in, s);
 	return s;
+}
+
+std::vector<std::wstring> split(const std::wstring &s, std::wstring delim) {
+	std::vector<std::wstring> elems;
+	std::wstring temp = s;
+	wchar_t * wcs = &temp[0];
+	wchar_t * pwc;
+	wchar_t * buffer;
+	pwc = wcstok_s(wcs, delim.c_str(), &buffer);
+	while (pwc) {
+		elems.push_back(pwc);
+		pwc = wcstok_s(nullptr, delim.c_str(), &buffer);
+	}
+	return elems;
 }
