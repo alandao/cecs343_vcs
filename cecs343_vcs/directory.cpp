@@ -190,7 +190,7 @@ std::wstring lineFromFile(const std::wstring& filename, int n) {
 	std::wstring s;
 	
 	//skip N lines
-	for (int i = 0; i < n; i++)
+	for (int i = 1; i < n; i++)
 		std::getline(in, s);
 
 	std::getline(in, s);
