@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "vcs.h"
+#include "directory.h"
 
 
 __int64 FileSize64(LPCWSTR szFileName)
@@ -36,9 +37,28 @@ int CheckSum(LPCWSTR filepath) {
 }
 
 
-std::wstring TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
-	std::wstring path = std::wstring(tgtFolder) + std::wstring(L"repo343/") +
-		std::wstring(filepath);
+std::wstring TrackFile(LPCWSTR filepath, LPCWSTR srcFolder, LPCWSTR tgtFolder) {
+	//filepath = guy1/mypt/a.txt
+	//srcFolder = guy1/mypt
+	std::vector<std::wstring> srcFolderTokens = split(srcFolder, L"/");
+	std::vector<std::wstring> filepathTokens = split(filepath, L"/");
+
+	auto itA = srcFolderTokens.begin();
+	auto itB = filepathTokens.begin();
+
+	//srcfoldertokens is always shorter than filepathtokens
+	while (itA != srcFolderTokens.end()) {
+		filepathTokens.erase(filepathTokens.begin());
+		++itA;
+	}
+	std::wstring filePathRelativeToSrcFolder = L"";
+
+	for (auto i : filepathTokens) {
+		filePathRelativeToSrcFolder = filePathRelativeToSrcFolder + L"/" + i;
+	}
+	std::wstring path = std::wstring(tgtFolder) + std::wstring(L"repo343/files/") +
+		filePathRelativeToSrcFolder;
+
 
 	//string manipulation hoops.
 	std::vector<std::wstring> folders;
@@ -68,7 +88,7 @@ std::wstring TrackFile(LPCWSTR filepath, LPCWSTR tgtFolder) {
 		CreateDirectory(x.c_str(), NULL);
 	}
 	std::wstring artifactID = std::to_wstring(CheckSum(filepath));
-	std::wstring newFilePath = (std::wstring(tgtFolder) + std::wstring(L"repo343/") + filepath + L"/" + artifactID);
+	std::wstring newFilePath = (std::wstring(tgtFolder) + std::wstring(L"repo343/files") + filePathRelativeToSrcFolder + L"/" + artifactID);
 	//copy file from src to target folder and rename as artifact id.
 	CopyFile(filepath, newFilePath.c_str(), true);
 

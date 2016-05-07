@@ -75,17 +75,9 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 	return dwError;
 }
 
-/*
-Parameters: Send it two FULL addresses of manifests. /repo343/manifest/blah.txt
-Return: Will return to you the address of their most recent common ancestor.
-	NOTE: It will return just the name of the file. If you want the full address, add "directoryAddress" to "return left"
-Works recursively by comparing the string names. It compares time in string format, and calls the parent of most recent file.
-	Will traverse upwards in a binary tree fashion.
-	Worst case: n+n
-	Best case: 1
-*/
-std::wstring findAncestor(std::wstring left, std::wstring right) {
-	std::wstring directoryAddress = L"repo343/manifest/";
+
+std::wstring findAncestor(std::wstring left, std::wstring right, std::wstring repoPath) {
+	std::wstring directoryAddress = repoPath + L"/repo343/manifest/";
 	std::wstring hold;
 	std::wifstream fileRead;
 	unsigned found = left.find_last_of(L"/\\");		
@@ -101,13 +93,13 @@ std::wstring findAncestor(std::wstring left, std::wstring right) {
 			fileRead.open(directoryAddress + left);
 			std::getline(fileRead, hold);
 			std::getline(fileRead, hold);
-			return findAncestor(directoryAddress + hold.substr(8), right);
+			return findAncestor(directoryAddress + hold.substr(8), right, repoPath);
 		}
 		else {	//right is more recent; call it's parent
 			fileRead.open(directoryAddress + right);
 			std::getline(fileRead, hold);
 			std::getline(fileRead, hold);
-			return findAncestor(left, directoryAddress + hold.substr(8));
+			return findAncestor(left, directoryAddress + hold.substr(8), repoPath);
 		}
 	}
 
@@ -115,14 +107,14 @@ std::wstring findAncestor(std::wstring left, std::wstring right) {
 		fileRead.open(directoryAddress + left);
 		std::getline(fileRead, hold);
 		std::getline(fileRead, hold);
-		return findAncestor(directoryAddress + hold.substr(8), right);
+		return findAncestor(directoryAddress + hold.substr(8), right, repoPath);
 	}
 
 	else {
 		fileRead.open(directoryAddress + right);
 		std::getline(fileRead, hold);
 		std::getline(fileRead, hold);
-		return findAncestor(left, directoryAddress + hold.substr(8));
+		return findAncestor(left, directoryAddress + hold.substr(8), repoPath);
 	}
 
 

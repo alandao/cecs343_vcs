@@ -18,7 +18,16 @@ struct Files {
 //NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector);
 
-std::wstring findAncestor(std::wstring left, std::wstring right);
+/*
+Parameters: Send it two FULL addresses of manifests. /repo343/manifest/blah.txt
+Return: Will return to you the address of their most recent common ancestor.
+	NOTE: It will return just the name of the file. If you want the full address, add "directoryAddress" to "return left"
+Works recursively by comparing the string names. It compares time in string format, and calls the parent of most recent file.
+	Will traverse upwards in a binary tree fashion.
+	Worst case: n+n
+	Best case: 1
+*/
+std::wstring findAncestor(std::wstring left, std::wstring right, std::wstring repoPath);
 
 //Richard:: This method will copy the entire folder structure from a directory to a target folder.
 

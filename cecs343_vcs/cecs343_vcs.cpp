@@ -46,7 +46,7 @@ int main(int argc, char *argv[], char *envp[])
 		int result = findFiles(src.c_str(), filepaths);
 
 		for (std::wstring x : filepaths) {
-			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
+			std::wstring action = TrackFile(x.c_str(), sourcefolder.c_str(), targetfolder.c_str());
 			outputFile << action << std::endl;
 		}
 		outputFile.close();
@@ -113,7 +113,7 @@ int main(int argc, char *argv[], char *envp[])
 		int result2 = findFiles(src.c_str(), filepaths);
 
 		for (std::wstring x : filepaths) {
-			std::wstring action = TrackFile(x.c_str(), targetfolder.c_str());
+			std::wstring action = TrackFile(x.c_str(), sourcefolder.c_str(), targetfolder.c_str());
 			outputFile << action << std::endl;
 		}
 		outputFile.close();
@@ -167,10 +167,7 @@ int main(int argc, char *argv[], char *envp[])
 		std::size_t found = fullManifest.find_last_of(L"/\\");
 		std::wstring shortManifest = fullManifest.substr(found + 1);
 
-		std::wstring firstLineManifest = lineFromFile(fullManifest, 1);
-		std::wstring projectTreeName = split(firstLineManifest, L"\\").back();
-
-		std::wstring src = sourceFolder + L"repo343/" + projectTreeName;
+		std::wstring src = sourceFolder + L"repo343/files";
 
 		//creating a new directory at the target folder and copying the folder structure
 		CreateDirectory(targetFolder.c_str(), NULL);
@@ -360,7 +357,7 @@ int main(int argc, char *argv[], char *envp[])
 	
 
 	else if (arg1.compare("test") == 0) {
-		std::wcout << findAncestor(L"repo343/manifest/2016-05-06 @ 01;19;32 PM.txt", L"repo343/manifest/2016-05-06 @ 01;17;35 PM.txt");
+		std::wcout << findAncestor(L"myrepo/repo343/manifest/2016-05-06 @ 07;21;11 PM.txt", L"myrepo/repo343/manifest/2016-05-06 @ 07;22;59 PM.txt", L"myrepo");
 
 	}
 	return 0;
