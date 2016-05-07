@@ -18,7 +18,7 @@ struct Files {
 //NOTE: Vector is passed by reference. Works recursively with all subfolders. Omits "." & ".."
 int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressVector);
 
-
+std::wstring findAncestor(std::wstring left, std::wstring right);
 
 //Richard:: This method will copy the entire folder structure from a directory to a target folder.
 
