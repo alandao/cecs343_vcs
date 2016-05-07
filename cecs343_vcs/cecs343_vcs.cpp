@@ -251,7 +251,10 @@ int main(int argc, char *argv[], char *envp[])
 		HANDLE h;
 		//gets the creation date of all the manifest files
 		for (std::wstring x : manifestFiles) {
-			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			h = CreateFile(x.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+			if (h == INVALID_HANDLE_VALUE) {
+				std::wcout << "Could not find manifest!" << std::endl;
+			}
 			GetFileTime(h, &ft, NULL, NULL);
 			tempf.filename = x;
 			tempf.tm = ft;
