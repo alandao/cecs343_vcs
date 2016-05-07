@@ -67,7 +67,10 @@ int main(int argc, char *argv[], char *envp[])
 		HANDLE h;
 		//gets the creation date of all the manifest files
 		for (std::wstring x : manifestFilepaths) {
-			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			h = CreateFile(x.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+			if (h == INVALID_HANDLE_VALUE) {
+				std::wcout << "Could not find manifest!" << std::endl;
+			}
 			GetFileTime(h, &ft, NULL, NULL);
 			tempf.filename = x;
 			tempf.tm = ft;
@@ -121,7 +124,7 @@ int main(int argc, char *argv[], char *envp[])
 	else if (arg1.compare("check_out") == 0) {
 		std::string arg4 = argv[4];
 		std::wstring sourceFolder = std::wstring(arg3.begin(), arg3.end()) +L"/";
-		std::wstring v = std::wstring(arg2.begin(), arg2.end()) + L"/";
+		std::wstring v = std::wstring(arg2.begin(), arg2.end());
 		std::wstring targetFolder = std::wstring(arg4.begin(), arg4.end());
 		int version = std::stoi(v);
 
@@ -137,7 +140,10 @@ int main(int argc, char *argv[], char *envp[])
 		HANDLE h;
 		//gets the creation date of all the manifest files
 		for (std::wstring x : manifestFiles) {
-			h = CreateFile(manifestAddresses.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			h = CreateFile(x.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+			if (h == INVALID_HANDLE_VALUE) {
+				std::wcout << "Could not find manifest!" << std::endl;
+			}
 			GetFileTime(h, &ft, NULL, NULL);
 			tempf.filename = x;
 			tempf.tm = ft;
