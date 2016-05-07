@@ -349,5 +349,10 @@ int main(int argc, char *argv[], char *envp[])
 		std::cout << " " << std::endl;
 	}
 	
+
+	else if (arg1.compare("test") == 0) {
+		std::wcout << findAncestor(L"repo343/manifest/2016-05-06 @ 01;19;32 PM.txt", L"repo343/manifest/2016-05-06 @ 01;17;35 PM.txt");
+
+	}
 	return 0;
 }
