@@ -236,8 +236,8 @@ int main(int argc, char *argv[], char *envp[])
 		//Start Manifest Find
 		//goes to where all the manifests are
 		std::vector<std::wstring> manifestFiles;
-		std::wstring tgtmanifestLoc = std::wstring(targetFolder) + std::wstring(L"/repo343/manifest/**");
-		int result = findFiles(tgtmanifestLoc.c_str(), manifestFiles);
+		std::wstring repomanifestLoc = std::wstring(repoFolder) + std::wstring(L"/repo343/manifest/**");
+		int result = findFiles(repomanifestLoc.c_str(), manifestFiles);
 
 		std::vector<Files> manifestFileDate;
 		Files tempf;
@@ -245,7 +245,7 @@ int main(int argc, char *argv[], char *envp[])
 		HANDLE h;
 		//gets the creation date of all the manifest files
 		for (std::wstring x : manifestFiles) {
-			h = CreateFile(tgtmanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
+			h = CreateFile(repomanifestLoc.c_str(), NULL, NULL, NULL, NULL, NULL, NULL);
 			GetFileTime(h, &ft, NULL, NULL);
 			tempf.filename = x;
 			tempf.tm = ft;
@@ -278,6 +278,9 @@ int main(int argc, char *argv[], char *envp[])
 			tManifestLines.push_back(strHold);
 		}
 		tManifest.close();
+		rManifestLines.erase(rManifestLines.begin(), rManifestLines.begin() + 2);
+		tManifestLines.erase(tManifestLines.begin(), tManifestLines.begin() + 2);
+
 		std::vector<std::wstring> rDelimStr;
 		std::vector<std::wstring> tDelimStr;
 		
@@ -289,12 +292,21 @@ int main(int argc, char *argv[], char *envp[])
 		//Iterate through comparing the left (rManifest) to the right (tManifest).
 		//uses a while loop, incrementing only when we have differences.
 		//We artifically move through the vector by removing similarities at 0, any differences get left behind as we increment past it.
-		int i = 0;
+		int i = 0; // counter for outer loop, to sift through the whole list
+		int j = 0; // counter for inner loop, to sift through the differences
+		CreateDirectory(targetFolder.c_str(), NULL);
 		while(i < rManifestLines.size()) {
 			it = find(tManifestLines.begin(), tManifestLines.end(), rManifestLines.at(i));
 			//Things were the same
 			if (it != tManifestLines.end()) {
-				//CopyFile(rManifestLines.at(i).c_str(), , true); Technically do nothing
+				rDelimStr = split(rManifestLines.at(i));
+				if (rDelimStr.size() > 0) {
+					std::wstring newRName = *(rDelimStr.end() - 2);
+					std::wstring copyMR = targetFolder + L"/" + newRName;
+					if (!CopyFile(rManifestLines.at(i).c_str(), copyMR.c_str(), false)) {
+						std::cout << "Could not copy file!. MRCOPY" << std::endl;
+					}
+				}
 				rManifestLines.erase(rManifestLines.begin());
 				tManifestLines.erase(it);
 			}
@@ -309,35 +321,37 @@ int main(int argc, char *argv[], char *envp[])
 				//File path is the same
 				if (it2 != tManifestLines.end()) {
 					std::wcout << "Something" << std::endl;
-					tDelimStr = split(*it2);
 					//the file artifact sizes are different
+					tDelimStr = split(tManifestLines.at(j));
 					if (rDelimStr.back() != tDelimStr.back()){
-						std::wcout << rDelimStr.back() << L'\n' << tDelimStr.back() << std::endl;
-						//Make a new folder of both files in the target
+						std::wcout << L"REPO: " + rDelimStr.back() << L'\n' << L"TARGET: " + tDelimStr.back() << std::endl;
 
-						/*std::wstring mergedDir = (targetFolder + L"/" + *(tManifestLines.end() - 2) + L"/");
+						//Make a new folder of both files in the target
+						std::wstring mergedDir = (targetFolder + L"/" + *(tManifestLines.end() - 2) + L"/");
 						std::wstring newRName, newTName;
-						newRName = *(rDelimStr.end() - 2) + L"_MR";
-						newTName = *(tDelimStr.end() - 2) + L"_MT";
-						for (std::wstring x : rManifestLines) {
-							std::vector<std::wstring> tokens = split(x, L"/");
-							//delete first 3 elements because it is REPO/REPO343/SRCTREE
-							tokens.erase(tokens.begin());
-							tokens.erase(tokens.begin());
-							tokens.erase(tokens.begin());
-							//delete last element since it is artifact ID
-							tokens.pop_back();
-							std::wstring filePathIncludingTargetFolder = targetFolder;
-							for (auto x : tokens) {
-								filePathIncludingTargetFolder = filePathIncludingTargetFolder + L"/" + x;
-							}
-							if (!CopyFileW(x.c_str(), filePathIncludingTargetFolder.c_str(), false)) {
-								std::cout << "Could not copy file!.\n" << std::endl;
-							}
-						}*/
-						//CreateDirectory(mergedDir.c_str(), NULL);
-						//CopyFile((mergedDir + newRName).c_str(), );
+						newRName = *(rDelimStr.end() - 2);
+						newTName = *(tDelimStr.end() - 2);
+
+						std::wstring filePathIncludingTargetFolderMT = targetFolder;
+						std::wstring filePathIncludingTargetFolderMR = targetFolder;
+						std::wstring destLocMT, destLocMR;
+
+						filePathIncludingTargetFolderMR = filePathIncludingTargetFolderMR + L"/" + newRName;
+						destLocMR = filePathIncludingTargetFolderMR + L"/" + L"MR_" + newRName;
+						CreateDirectory(filePathIncludingTargetFolderMR.c_str(), NULL);
+						if (!CopyFile(rManifestLines.at(i).c_str(), destLocMR.c_str(), false)) {
+							std::cout << "Could not copy file!. MR" << std::endl;
+						}
+
+						filePathIncludingTargetFolderMT = filePathIncludingTargetFolderMT + L"/" + newTName;
+						destLocMT = filePathIncludingTargetFolderMT + L"/" + L"MT_" + newTName;
+						CreateDirectory(filePathIncludingTargetFolderMT.c_str(), NULL);
+						if (!CopyFile(tManifestLines.at(j).c_str(), destLocMT.c_str(), false)) {
+							std::cout << "Could not copy file!. MT" << std::endl;
+						}
+									
 					}
+					j++;
 				}
 				std::wcout << temp << std::endl;
 				i++;
