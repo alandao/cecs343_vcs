@@ -75,6 +75,58 @@ int findFiles(std::wstring directoryAddress, std::vector<std::wstring>& addressV
 	return dwError;
 }
 
+/*
+Parameters: Send it two FULL addresses of manifests. /repo343/manifest/blah.txt
+Return: Will return to you the address of their most recent common ancestor.
+	NOTE: It will return just the name of the file. If you want the full address, add "directoryAddress" to "return left"
+Works recursively by comparing the string names. It compares time in string format, and calls the parent of most recent file.
+	Will traverse upwards in a binary tree fashion.
+	Worst case: n+n
+	Best case: 1
+*/
+std::wstring findAncestor(std::wstring left, std::wstring right) {
+	std::wstring directoryAddress = L"repo343/manifest/";
+	std::wstring hold;
+	std::wifstream fileRead;
+	unsigned found = left.find_last_of(L"/\\");		
+	left = left.substr(found + 1);
+	found = right.find_last_of(L"/\\");
+	right = right.substr(found + 1);
+
+
+	if (left.substr(0, 10).compare(right.substr(0, 10)) == 0) { //same date
+		if (left.substr(12).compare(right.substr(12)) == 0) //same time
+			return left;
+		else if (left.substr(12).compare(right.substr(12)) == 1) { //left is more recent; call it's parent
+			fileRead.open(directoryAddress + left);
+			std::getline(fileRead, hold);
+			std::getline(fileRead, hold);
+			return findAncestor(directoryAddress + hold.substr(8), right);
+		}
+		else {	//right is more recent; call it's parent
+			fileRead.open(directoryAddress + right);
+			std::getline(fileRead, hold);
+			std::getline(fileRead, hold);
+			return findAncestor(left, directoryAddress + hold.substr(8));
+		}
+	}
+
+	else if (left.substr(0, 10).compare(right.substr(0, 10)) == 1) { //left is more recent; call it's parent
+		fileRead.open(directoryAddress + left);
+		std::getline(fileRead, hold);
+		std::getline(fileRead, hold);
+		return findAncestor(directoryAddress + hold.substr(8), right);
+	}
+
+	else {
+		fileRead.open(directoryAddress + right);
+		std::getline(fileRead, hold);
+		std::getline(fileRead, hold);
+		return findAncestor(left, directoryAddress + hold.substr(8));
+	}
+
+
+}
 
 int copyStructure(std::wstring directoryAddress, std::wstring target) {
 	HANDLE hFind = INVALID_HANDLE_VALUE;
